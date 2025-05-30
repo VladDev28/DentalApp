@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.controller.AddPatientController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <top>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <Label text="Add New Patient" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <center>
+        <VBox spacing="20" style="-fx-padding: 30;">
+
+            <Label text="Patient Information" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+            <GridPane hgap="15" vgap="15">
+                <columnConstraints>
+                    <ColumnConstraints minWidth="100" prefWidth="100"/>
+                    <ColumnConstraints minWidth="200" prefWidth="200"/>
+                    <ColumnConstraints minWidth="100" prefWidth="100"/>
+                    <ColumnConstraints minWidth="200" prefWidth="200"/>
+                </columnConstraints>
+
+                <!-- Row 0 -->
+                <Label text="Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <TextField fx:id="nameField" promptText="Enter first name"
+                           GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+
+                <Label text="Surname:" GridPane.columnIndex="2" GridPane.rowIndex="0"/>
+                <TextField fx:id="surnameField" promptText="Enter surname"
+                           GridPane.columnIndex="3" GridPane.rowIndex="0"/>
+
+                <!-- Row 1 -->
+                <Label text="CNP:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <TextField fx:id="cnpField" promptText="Enter CNP (13 digits)"
+                           GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+                <Label text="Phone:" GridPane.columnIndex="2" GridPane.rowIndex="1"/>
+                <TextField fx:id="phoneField" promptText="Enter phone number"
+                           GridPane.columnIndex="3" GridPane.rowIndex="1"/>
+
+                <!-- Row 2 -->
+                <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <TextField fx:id="emailField" promptText="Enter email address"
+                           GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.columnSpan="3"/>
+            </GridPane>
+        </VBox>
+    </center>
+
+    <bottom>
+        <VBox spacing="10" style="-fx-padding: 20;">
+            <Separator/>
+
+            <Label fx:id="statusLabel" text="Fill in all required fields and click Save"
+                   style="-fx-text-fill: #666666;"/>
+
+            <!-- Buttons -->
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button text="Clear All" onAction="#handleClearAll"
+                        style="-fx-background-color: #f0f0f0; -fx-text-fill: #333333;"
+                        prefWidth="100"/>
+                <Button text="Cancel" onAction="#handleCancel"
+                        style="-fx-background-color: #e74c3c; -fx-text-fill: white;"
+                        prefWidth="100"/>
+                <Button fx:id="saveButton" text="Save Patient" onAction="#handleSavePatient"
+                        style="-fx-background-color: #27ae60; -fx-text-fill: white;"
+                        prefWidth="120"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

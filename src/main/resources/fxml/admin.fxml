@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="org.example.controller.AdminController"
+            prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <!-- Search Section -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="Search by name or phone" prefWidth="300"/>
+                <Button text="Search" onAction="#handleSearch"/>
+                <Button text="Refresh" onAction="#refreshTable"/>
+                <Button text="Add Patient" onAction="#handleAddPatient"/>
+            </HBox>
+
+            <!-- Status and Count -->
+            <HBox spacing="20" alignment="CENTER_LEFT">
+                <Label fx:id="statusLabel" text="Ready"/>
+                <Label fx:id="patientCountLabel" text="Total Patients: 0"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <center>
+        <TableView fx:id="patientsTable" prefHeight="400">
+            <columns>
+                <TableColumn text="First Name" fx:id="nameCol" prefWidth="120"/>
+                <TableColumn text="Last Name" fx:id="surnameCol" prefWidth="120"/>
+                <TableColumn text="CNP" fx:id="cnpCol" prefWidth="140"/>
+                <TableColumn text="Phone" fx:id="phoneCol" prefWidth="120"/>
+                <TableColumn text="Email" fx:id="emailCol" prefWidth="180"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" style="-fx-padding: 10;" alignment="CENTER_LEFT">
+            <Button fx:id="viewButton" text="View" disable="true"/>
+            <Button fx:id="editButton" text="Edit" onAction="#handleEditPatient" disable="true"/>
+            <Button fx:id="deleteButton" text="Delete" onAction="#handleDeletePatient" disable="true"/>
+            <Button fx:id="uploadButton" text="Upload X-Ray" onAction="#handleUploadXray" disable="true"/>
+
+            <!-- Spacer -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <Button text="Logout" onAction="#handleLogout"/>
+        </HBox>
+    </bottom>
+</BorderPane>
+

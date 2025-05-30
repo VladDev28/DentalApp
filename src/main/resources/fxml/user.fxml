@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.example.controller.UserController"
+      alignment="CENTER" spacing="15" styleClass="user-pane" padding="20">
+
+    <Label fx:id="nameLabel" text="Name:"/>
+    <Label fx:id="cnpLabel" text="CNP:"/>
+    <Label fx:id="phoneLabel" text="Phone:"/>
+    <Label fx:id="emailLabel" text="Email:"/>
+    <ImageView fx:id="xrayImage" fitHeight="200" fitWidth="300"/>
+</VBox>

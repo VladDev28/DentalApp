@@ -1,0 +1,45 @@
+.root {
+    -fx-background-image: url("1678785522.png");
+    -fx-background-size: cover;
+    -fx-background-repeat: no-repeat;
+}
+
+
+.login-pane {
+    -fx-background-color: linear-gradient(to bottom, #e0f7fa, #80deea);
+}
+
+.login-box {
+    -fx-padding: 20;
+    -fx-background-color: white;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.1, 0, 2);
+}
+
+.title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #00796b;
+}
+
+.input-field {
+    -fx-pref-width: 250;
+    -fx-padding: 8 12;
+    -fx-background-radius: 5;
+    -fx-border-color: #b2dfdb;
+    -fx-border-width: 1;
+    -fx-border-radius: 5;
+}
+
+.login-button {
+    -fx-background-color: #00796b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 20;
+    -fx-background-radius: 5;
+}
+
+.login-button:hover {
+    -fx-background-color: #004d40;
+}
