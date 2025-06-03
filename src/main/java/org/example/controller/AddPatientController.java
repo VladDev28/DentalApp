@@ -2,13 +2,11 @@ package org.example.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import org.example.Replication.ReplicationService;
 import org.example.dao.PatientDAO;
 import org.example.model.Patient;
-
 import java.net.URL;
 import java.util.ResourceBundle;
-
-import static org.example.manager.SceneManager.closeWindow;
 
 public class AddPatientController {
     @FXML
@@ -22,6 +20,7 @@ public class AddPatientController {
         setupValidation();
 
     }
+
 
     public void setupValidation() {
         nameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
@@ -78,6 +77,7 @@ public class AddPatientController {
 
             boolean success = PatientDAO.addPatient(patient);
 
+
             if (success) {
                 showSuccessAlert("Patient Added", "Patient has been successfully added to the database.");
                 clearAllFields();
@@ -90,6 +90,7 @@ public class AddPatientController {
             throw new RuntimeException(e);
         }
     }
+
 
     private void clearAllFields() {
 

@@ -1,47 +1,42 @@
 package org.example.Replication;
 
-import java.security.MessageDigest;
-import java.util.Base64;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-public class ReplicationMessage {
+public class ReplicationMessage implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    public enum MessageType {
-        WAL_DATA, HEARTBEAT, ACK, RESEND_REQUEST, HANDSHAKE
+    public enum Operation {
+        INSERT, UPDATE, DELETE
     }
 
-    private long sequenceNumber;
-    private MessageType type;
-    private byte[] data;
-    private String checksum;
-    private long timestamp;
+    private Operation operation;
+    private String tableName;
+    private Object data;
+    private LocalDateTime timestamp;
+    private String sourceNodeId;
 
-    public ReplicationMessage(long seqNum, MessageType type, byte[] data) {
-        this.sequenceNumber = seqNum;
-        this.type = type;
+    public ReplicationMessage(Operation operation, String tableName, Object data, String sourceNodeId) {
+        this.operation = operation;
+        this.tableName = tableName;
         this.data = data;
-        this.timestamp = System.currentTimeMillis();
-        this.checksum = calculateChecksum(data);
-    }
-
-    private String calculateChecksum(byte[] data) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] hash = md.digest(data != null ? data : new byte[0]);
-            return Base64.getEncoder().encodeToString(hash);
-        } catch (Exception e) {
-            return "";
-        }
-    }
-
-    public boolean verifyChecksum() {
-        return checksum.equals(calculateChecksum(data));
+        this.sourceNodeId = sourceNodeId;
+        this.timestamp = LocalDateTime.now();
     }
 
     // Getters and setters
-    public long getSequenceNumber() { return sequenceNumber; }
-    public MessageType getType() { return type; }
-    public byte[] getData() { return data; }
-    public String getChecksum() { return checksum; }
-    public long getTimestamp() { return timestamp; }
+    public Operation getOperation() { return operation; }
+    public void setOperation(Operation operation) { this.operation = operation; }
+
+    public String getTableName() { return tableName; }
+    public void setTableName(String tableName) { this.tableName = tableName; }
+
+    public Object getData() { return data; }
+    public void setData(Object data) { this.data = data; }
+
+    public LocalDateTime getTimestamp() { return timestamp; }
+    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+
+    public String getSourceNodeId() { return sourceNodeId; }
+    public void setSourceNodeId(String sourceNodeId) { this.sourceNodeId = sourceNodeId; }
 }

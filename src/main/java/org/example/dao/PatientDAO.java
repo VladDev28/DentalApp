@@ -1,5 +1,6 @@
 package org.example.dao;
 
+import org.example.Replication.ReplicationService;
 import org.example.database.Database;
 import org.example.model.Patient;
 import java.sql.*;
@@ -91,16 +92,44 @@ public class PatientDAO {
         return patient;
     }
 
-    /**
-     * Adds a new patient to the database
-     * @param patient The patient to add
-     * @return true if successful, false otherwise
-     */
+//    public static boolean addPatient(Patient patient) {
+//        String sql = "INSERT INTO patients (name, surname, cnp, phone, email) VALUES (?, ?, ?, ?, ?)";
+//
+//        try (Connection conn = Database.getConnection();
+//             PreparedStatement stmt = conn.prepareStatement(sql)) {
+//
+//            stmt.setString(1, patient.getName());
+//            stmt.setString(2, patient.getSurname());
+//            stmt.setString(3, patient.getCnp());
+//            stmt.setString(4, patient.getPhone());
+//            stmt.setString(5, patient.getEmail());
+//
+//            int rowsAffected = stmt.executeUpdate();
+//            return rowsAffected > 0;
+//
+//
+//        } catch (SQLException e) {
+//            System.err.println("Error adding patient: " + e.getMessage());
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+
     public static boolean addPatient(Patient patient) {
+        boolean success = addPatientNoReplication(patient);
+        if (success) {
+            // Replicate to other nodes
+            ReplicationService.replicatePatientInsert(patient);
+        }
+        return success;
+    }
+
+
+    public static boolean addPatientNoReplication(Patient patient) {
         String sql = "INSERT INTO patients (name, surname, cnp, phone, email) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, patient.getName());
             stmt.setString(2, patient.getSurname());
@@ -109,7 +138,16 @@ public class PatientDAO {
             stmt.setString(5, patient.getEmail());
 
             int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+
+            if (rowsAffected > 0) {
+                // Get the generated ID
+                ResultSet generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    patient.setId(generatedKeys.getInt(1));
+                }
+                return true;
+            }
+            return false;
 
         } catch (SQLException e) {
             System.err.println("Error adding patient: " + e.getMessage());
@@ -118,12 +156,15 @@ public class PatientDAO {
         }
     }
 
-    /**
-     * Updates an existing patient in the database
-     * @param patient The patient with updated information
-     * @return true if successful, false otherwise
-     */
     public static boolean updatePatient(Patient patient) {
+        boolean success = updatePatientNoReplication(patient);
+        if (success) {
+            ReplicationService.replicatePatientUpdate(patient);
+        }
+        return success;
+    }
+
+    public static boolean updatePatientNoReplication(Patient patient) {
         String sql = "UPDATE patients SET name = ?, surname = ?, cnp = ?, phone = ?, email = ? WHERE id = ?";
 
         try (Connection conn = Database.getConnection();
@@ -169,12 +210,15 @@ public class PatientDAO {
         }
     }
 
-    /**
-     * Deletes a patient from the database
-     * @param patientId The ID of the patient to delete
-     * @return true if successful, false otherwise
-     */
     public static boolean deletePatient(long patientId) {
+        boolean success = deletePatientNoReplication(patientId);
+        if (success) {
+            ReplicationService.replicatePatientDelete(patientId);
+        }
+        return success;
+    }
+
+    public static boolean deletePatientNoReplication(long patientId) {
         String sql = "DELETE FROM patients WHERE id = ?";
 
         try (Connection conn = Database.getConnection();
@@ -191,11 +235,6 @@ public class PatientDAO {
         }
     }
 
-    /**
-     * Finds a patient by their CNP (Personal Numerical Code)
-     * @param cnp The CNP to search for
-     * @return Patient object if found, null otherwise
-     */
     public static Patient findByCnp(String cnp) {
         String sql = "SELECT * FROM patients WHERE cnp = ?";
 
