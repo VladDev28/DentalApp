@@ -31,6 +31,7 @@ public class AdminController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Set up table columns
+
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         surnameCol.setCellValueFactory(new PropertyValueFactory<>("surname"));
         cnpCol.setCellValueFactory(new PropertyValueFactory<>("cnp"));

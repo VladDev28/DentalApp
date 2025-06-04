@@ -9,10 +9,6 @@ import java.util.List;
 
 public class PatientDAO {
 
-    /**
-     * Retrieves all patients from the database
-     * @return List of all patients
-     */
     public static List<Patient> getAll() {
         List<Patient> patients = new ArrayList<>();
         String sql = "SELECT * FROM patients";
