@@ -136,7 +136,6 @@ public class PatientDAO {
             int rowsAffected = stmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                // Get the generated ID
                 ResultSet generatedKeys = stmt.getGeneratedKeys();
                 if (generatedKeys.next()) {
                     patient.setId(generatedKeys.getInt(1));
