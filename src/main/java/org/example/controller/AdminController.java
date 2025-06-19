@@ -1,17 +1,16 @@
 package org.example.controller;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
-import org.example.database.Database;
 import org.example.dao.PatientDAO;
 import javafx.collections.FXCollections;
 import org.example.model.Patient;
 import org.example.manager.SceneManager;
+import org.example.manager.Scripts;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +29,6 @@ public class AdminController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Set up table columns
 
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         surnameCol.setCellValueFactory(new PropertyValueFactory<>("surname"));
@@ -38,7 +36,6 @@ public class AdminController implements Initializable {
         phoneCol.setCellValueFactory(new PropertyValueFactory<>("phone"));
         emailCol.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // Set up selection listener to enable/disable buttons
         patientsTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             boolean hasSelection = newSelection != null;
             if (viewButton != null) viewButton.setDisable(!hasSelection);

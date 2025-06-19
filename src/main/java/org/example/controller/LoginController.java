@@ -12,9 +12,11 @@ import org.example.dao.PatientDAO;
 import org.example.model.Patient;
 import org.example.manager.SceneManager;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class LoginController {
     @FXML private TextField usernameField;
@@ -31,7 +33,7 @@ public class LoginController {
             return;
         }
 
-        try (Connection conn = Database.getConnection()) {
+        try (Connection conn = Database.getMasterConnection()) { // Always authenticate against master
             String sql = "SELECT password, role FROM users WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
@@ -45,33 +47,28 @@ public class LoginController {
                 if (result.verified) {
                     errorLabel.setText("");
 
-                    if (role.equals("admin")) {
-                        // Load admin scene
-                        SceneManager.switchScene(event, "/fxml/admin.fxml", "Hospital Management - Admin Dashboard");
+                    SceneManager.switchScene(event, "/fxml/admin.fxml", "Hospital Management - Admin Dashboard");
 
-                    } else if (role.equals("user")) {
-                        // Load user scene and pass patient data
-                        FXMLLoader loader = SceneManager.switchScene(event, "/fxml/user.fxml", "Hospital Management - Patient Portal");
-
-                    }
                 } else {
                     errorLabel.setText("Invalid credentials.");
                 }
             } else {
                 errorLabel.setText("Invalid credentials.");
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            errorLabel.setText("Error: " + e.getMessage());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @FXML
     private void handleRegister(ActionEvent event) {
         try {
-            SceneManager.switchScene(event, "/fxml/register.fxml", "Hospital Management - Register");
+            SceneManager.switchScene(event, "/fxml/login.fxml", "Dentist Office");
         } catch (Exception e) {
             errorLabel.setText("Error loading registration page.");
+            e.printStackTrace();
         }
     }
 

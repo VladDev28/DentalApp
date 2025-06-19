@@ -12,7 +12,6 @@
             prefHeight="400.0" prefWidth="600.0">
     <top>
         <VBox spacing="10" style="-fx-padding: 10;">
-            <!-- Search Section -->
             <HBox spacing="10" alignment="CENTER_LEFT">
                 <TextField fx:id="searchField" promptText="Search by name or phone" prefWidth="300"/>
                 <Button text="Search" onAction="#handleSearch"/>

@@ -2,11 +2,11 @@ package org.example.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.example.Replication.ReplicationService;
 import org.example.dao.PatientDAO;
 import org.example.model.Patient;
 import java.net.URL;
 import java.util.ResourceBundle;
+import org.example.manager.Scripts;
 
 public class AddPatientController {
     @FXML
@@ -18,9 +18,7 @@ public class AddPatientController {
 
     public void initialize(URL location, ResourceBundle resources) {
         setupValidation();
-
     }
-
 
     public void setupValidation() {
         nameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
@@ -39,30 +37,36 @@ public class AddPatientController {
             cnpField.requestFocus();
             return false;
         }
+
         String email = emailField.getText().trim();
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             showErrorAlert("Validation error","Invalid email","Email format does not match");
-            cnpField.requestFocus();
+            emailField.requestFocus(); // Fixed: was cnpField
             return false;
         }
+
         String phone = phoneField.getText().trim();
         if (!phone.matches("^(\\+4|004)?0?(7\\d{8})$")) {
             showErrorAlert("Validation error","Invalid Phone number","Enter a correct phone number");
-            cnpField.requestFocus();
+            phoneField.requestFocus(); // Fixed: was cnpField
             return false;
         }
         return true;
-
     }
 
+    Scripts script = new Scripts();
+
+    @FXML
     public void handleClearAll(){
-
+        clearAllFields();
     }
+
+    @FXML
     public void handleCancel(){
-
+        nameField.getScene().getWindow().hide();
     }
 
-
+    @FXML
     public void handleSavePatient() {
         if(!validateInserts()){
             return;
@@ -77,10 +81,10 @@ public class AddPatientController {
 
             boolean success = PatientDAO.addPatient(patient);
 
-
             if (success) {
                 showSuccessAlert("Patient Added", "Patient has been successfully added to the database.");
                 clearAllFields();
+                script.runBatchFile("C:\\postgres_archive\\script.bat");
             } else {
                 statusLabel.setText("Failed to save patient");
                 statusLabel.setStyle("-fx-text-fill: #e74c3c;");
@@ -91,17 +95,71 @@ public class AddPatientController {
         }
     }
 
+    private int currentPatientId;
+
+    public void setPatientForEditing(Patient patient) {
+        if (patient != null) {
+            currentPatientId = patient.getId();
+            nameField.setText(patient.getName());
+            surnameField.setText(patient.getSurname());
+            cnpField.setText(patient.getCnp());
+            phoneField.setText(patient.getPhone());
+            emailField.setText(patient.getEmail());
+            updateButtonSaveState();
+        }
+    }
+
+    @FXML
+    public void handleEditPatient() {
+        if (!validateInserts()) {
+            return;
+        }
+        try {
+            if (currentPatientId == 0) {
+                showErrorAlert("Edit Error", "No patient selected", "Please select a patient to edit.");
+                return;
+            }
+
+            Patient patient = new Patient();
+            patient.setId(currentPatientId);
+            patient.setName(nameField.getText().trim());
+            patient.setSurname(surnameField.getText().trim());
+            patient.setCnp(cnpField.getText().trim());
+            patient.setPhone(phoneField.getText().trim());
+            patient.setEmail(emailField.getText().trim());
+
+            boolean success = PatientDAO.updatePatient(patient);
+
+            if (success) {
+                showSuccessAlert("Patient Updated", "Patient information has been successfully updated.");
+                clearAllFields();
+            } else {
+                statusLabel.setText("Failed to update patient");
+                statusLabel.setStyle("-fx-text-fill: #e74c3c;");
+                showErrorAlert("Update Error", "Failed to update patient", "Please try again.");
+            }
+        } catch (Exception e) {
+            statusLabel.setText("Error updating patient");
+            statusLabel.setStyle("-fx-text-fill: #e74c3c;");
+            showErrorAlert("Update Error", "An error occurred", "Error: " + e.getMessage());
+        }
+    }
 
     private void clearAllFields() {
-
+        nameField.clear();
+        surnameField.clear();
+        cnpField.clear();
+        phoneField.clear();
+        emailField.clear();
+        updateButtonSaveState();
     }
 
     public void updateButtonSaveState() {
         boolean allFieldsFilled = !nameField.getText().trim().isEmpty() &&
                 !surnameField.getText().trim().isEmpty() &&
                 !cnpField.getText().trim().isEmpty() &&
-                !cnpField.getText().trim().isEmpty() &&
-                !cnpField.getText().trim().isEmpty();
+                !phoneField.getText().trim().isEmpty() &&
+                !emailField.getText().trim().isEmpty();
 
         saveButton.setDisable(!allFieldsFilled);
 
@@ -130,6 +188,3 @@ public class AddPatientController {
         alert.showAndWait();
     }
 }
-
-
-
