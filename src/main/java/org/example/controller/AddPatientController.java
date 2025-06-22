@@ -211,7 +211,6 @@ public class AddPatientController {
         phoneField.clear();
         emailField.clear();
 
-        // Reset checkbox
         if (createUserAccountCheckbox != null) {
             createUserAccountCheckbox.setSelected(false);
             createUserAccountCheckbox.setVisible(true);
@@ -232,7 +231,6 @@ public class AddPatientController {
             saveButton.setDisable(!allFieldsFilled);
         }
 
-        // Update status label with helpful message
         if (statusLabel != null) {
             if (allFieldsFilled) {
                 statusLabel.setText("✅ Ready to save patient");
