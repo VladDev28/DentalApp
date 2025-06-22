@@ -35,7 +35,6 @@ public class AddPatientController {
     }
 
     public void setupValidation() {
-        // Add text property listeners for real-time validation
         nameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
         surnameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
         cnpField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
@@ -43,7 +42,6 @@ public class AddPatientController {
         emailField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
     }
 
-    // Method called from FXML when user types in any field
     @FXML
     public void onFieldChanged() {
         updateButtonSaveState();
@@ -125,15 +123,12 @@ public class AddPatientController {
 
     private String createUserAccountForPatient(Patient patient) {
         try {
-            // Check if user already exists
             if (UserDAO.userExists(patient.getCnp())) {
                 return "⚠️ User account already exists for this patient.";
             }
 
-            // Generate password
             String generatedPassword = UserDAO.generateRandomPassword(8);
 
-            // Create user account
             User newUser = new User();
             newUser.setUsername(patient.getCnp());
             newUser.setPassword(generatedPassword);
@@ -167,7 +162,6 @@ public class AddPatientController {
             emailField.setText(patient.getEmail());
             updateButtonSaveState();
 
-            // Hide user creation checkbox when editing
             if (createUserAccountCheckbox != null) {
                 createUserAccountCheckbox.setVisible(false);
             }
@@ -227,7 +221,6 @@ public class AddPatientController {
     }
 
     public void updateButtonSaveState() {
-        // Check if all required fields are filled
         boolean allFieldsFilled =
                 nameField.getText() != null && !nameField.getText().trim().isEmpty() &&
                         surnameField.getText() != null && !surnameField.getText().trim().isEmpty() &&
@@ -235,7 +228,6 @@ public class AddPatientController {
                         phoneField.getText() != null && !phoneField.getText().trim().isEmpty() &&
                         emailField.getText() != null && !emailField.getText().trim().isEmpty();
 
-        // Enable/disable the save button
         if (saveButton != null) {
             saveButton.setDisable(!allFieldsFilled);
         }
@@ -250,10 +242,6 @@ public class AddPatientController {
                 statusLabel.setStyle("-fx-text-fill: #f39c12; -fx-font-weight: normal;");
             }
         }
-
-        // Debug info (remove this in production)
-        System.out.println("Button state updated - All fields filled: " + allFieldsFilled);
-        System.out.println("Save button disabled: " + (saveButton != null ? saveButton.isDisabled() : "saveButton is null"));
     }
 
     private void showSuccessAlert(String title, String message) {

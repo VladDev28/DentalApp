@@ -89,7 +89,6 @@ public class UserController implements Initializable {
         statusLabel.setText("❌ Patient information not found");
         statusLabel.setStyle("-fx-text-fill: #e74c3c;");
 
-        // Show alert to user
         showErrorAlert("Patient Not Found",
                 "Unable to load patient information",
                 "Your patient record could not be found in the system. Please contact the reception desk for assistance.");
@@ -108,7 +107,6 @@ public class UserController implements Initializable {
                 System.err.println("Error loading X-ray image: " + e.getMessage());
             }
         } else {
-            // Set a placeholder image or keep it empty
             xrayImage.setImage(null);
             xrayLabel.setText("ℹ️ No X-ray image available");
             xrayLabel.setStyle("-fx-text-fill: #7f8c8d;");
@@ -119,11 +117,9 @@ public class UserController implements Initializable {
         if (currentPatient == null || currentPatient.getXray() == null) return;
 
         try {
-            // Create a new stage for full-size X-ray viewing
             Stage xrayStage = new Stage();
             xrayStage.setTitle("X-Ray - " + currentPatient.getName() + " " + currentPatient.getSurname());
 
-            // Create image view for full size
             ImageView fullSizeImageView = new ImageView();
             Image fullSizeImage = new Image(new ByteArrayInputStream(currentPatient.getXray()));
             fullSizeImageView.setImage(fullSizeImage);
@@ -131,7 +127,6 @@ public class UserController implements Initializable {
             fullSizeImageView.setFitWidth(800);
             fullSizeImageView.setFitHeight(600);
 
-            // Create scene and show
             javafx.scene.Scene scene = new javafx.scene.Scene(new javafx.scene.layout.StackPane(fullSizeImageView), 820, 620);
             xrayStage.setScene(scene);
             xrayStage.show();
@@ -166,13 +161,6 @@ public class UserController implements Initializable {
         alert.showAndWait();
     }
 
-    private void showInfoAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
 
     public void refreshPatientData() {
         if (currentPatient != null) {

@@ -106,61 +106,6 @@ public class ManageUsersController implements Initializable {
         }
     }
 
-    @FXML
-    private void handleSearch() {
-        String query = searchField.getText().trim();
-        if (query.isEmpty()) {
-            loadAllUsers();
-            return;
-        }
-
-        try {
-            // Search in users
-            List<User> allUsers = UserDAO.searchUsers(query);
-            List<UserTableRow> filteredRows = new ArrayList<>();
-
-            for (User user : allUsers) {
-                String patientName = "N/A";
-                String status = "Active";
-                boolean includeRow = false;
-
-                // Check if query matches username or role
-                if (user.getUsername().toLowerCase().contains(query.toLowerCase()) ||
-                        user.getRole().toLowerCase().contains(query.toLowerCase())) {
-                    includeRow = true;
-                }
-
-                if ("user".equals(user.getRole())) {
-                    Patient patient = PatientDAO.findByCnp(user.getUsername());
-                    if (patient != null) {
-                        patientName = patient.getName() + " " + patient.getSurname();
-                        status = "Patient Account";
-
-
-                        if (patientName.toLowerCase().contains(query.toLowerCase())) {
-                            includeRow = true;
-                        }
-                    }
-
-                } else if ("admin".equals(user.getRole())) {
-                    status = "Administrator";
-                }
-
-                if (includeRow) {
-                    filteredRows.add(new UserTableRow(user.getUsername(), user.getRole(), patientName, status));
-                }
-            }
-
-            usersTable.setItems(FXCollections.observableArrayList(filteredRows));
-            updateUserCount(filteredRows.size());
-            statusLabel.setText("Found " + filteredRows.size() + " users matching: " + query);
-            statusLabel.setStyle("-fx-text-fill: #27ae60;");
-
-        } catch (Exception e) {
-            statusLabel.setText("Search error: " + e.getMessage());
-            statusLabel.setStyle("-fx-text-fill: #e74c3c;");
-        }
-    }
 
     private void updateUserCount(int count) {
         userCountLabel.setText("Total Users: " + count);
