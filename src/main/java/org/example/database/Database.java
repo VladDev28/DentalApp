@@ -15,14 +15,6 @@ public class Database {
 
     private static boolean isReplicaMode = false;
 
-    public static void setReplicaMode(boolean replica) {
-        isReplicaMode = replica;
-    }
-
-    public static boolean isReplicaMode() {
-        return isReplicaMode;
-    }
-
     public static Connection getConnection() throws SQLException {
         if (isReplicaMode) {
             return getReplicaConnection();

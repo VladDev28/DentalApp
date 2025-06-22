@@ -1,29 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="org.example.controller.LoginController"
-            prefHeight="600.0" prefWidth="800.0">
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.LoginController" styleClass="login-container">
+    <center>
+        <VBox alignment="CENTER" spacing="0" style="-fx-padding: 50;">
+            <children>
+                <VBox alignment="CENTER" spacing="20" style="-fx-padding: 0 0 30 0;">
+                    <children>
+                        <Label text="Secure Login Portal" style="-fx-font-size: 16px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;" />
+                    </children>
+                </VBox>
 
-    <children>
-        <VBox alignment="CENTER" spacing="15" layoutX="50" layoutY="30"
-              AnchorPane.leftAnchor="150" AnchorPane.rightAnchor="150" AnchorPane.topAnchor="130" AnchorPane.bottomAnchor="130"
-              styleClass="login-box">
+                <!-- Login Form -->
+                <VBox alignment="CENTER" spacing="25" styleClass="login-form" maxWidth="400" minWidth="350">
+                    <children>
+                        <!-- Form Header -->
+                        <VBox alignment="CENTER" spacing="10">
+                            <children>
+                                <Label text="Welcome Back" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                <Label text="Please sign in to your account" style="-fx-font-size: 14px; -fx-text-fill: #7f8c8d;" />
+                                <Separator prefWidth="200" style="-fx-background-color: #27ae60;" />
+                            </children>
+                        </VBox>
 
-            <Label text="Dental App Login" styleClass="title"/>
+                        <!-- Input Fields -->
+                        <VBox spacing="20" alignment="CENTER">
+                            <children>
+                                <!-- Username Field -->
+                                <VBox spacing="8" alignment="CENTER_LEFT">
+                                    <children>
+                                        <HBox spacing="8" alignment="CENTER_LEFT">
+                                            <children>
+                                                <Label text="👤" style="-fx-font-size: 16px;" />
+                                                <Label text="Username:" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                            </children>
+                                        </HBox>
+                                        <TextField fx:id="usernameField" promptText="Enter your username or CNP" styleClass="login-text-field" prefWidth="320" />
+                                    </children>
+                                </VBox>
 
-            <TextField fx:id="usernameField" promptText="Username" styleClass="input-field"/>
-            <PasswordField fx:id="passwordField" promptText="Password" styleClass="input-field"/>
+                                <!-- Password Field -->
+                                <VBox spacing="8" alignment="CENTER_LEFT">
+                                    <children>
+                                        <HBox spacing="8" alignment="CENTER_LEFT">
+                                            <children>
+                                                <Label text="🔒" style="-fx-font-size: 16px;" />
+                                                <Label text="Password:" style="-fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                            </children>
+                                        </HBox>
+                                        <PasswordField fx:id="passwordField" promptText="Enter your password" styleClass="login-text-field" prefWidth="320" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </VBox>
 
-            <Button text="Login" onAction="#handleLogin" styleClass="login-button"/>
-            <Label fx:id="errorLabel" textFill="red"/>
+                        <!-- Error Label -->
+                        <Label fx:id="errorLabel" style="-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 14px;" text="" wrapText="true" />
+
+                        <!-- Login Button -->
+                        <VBox spacing="15" alignment="CENTER">
+                            <children>
+                                <Button fx:id="loginButton" onAction="#handleLogin" text="🔓 Sign In" styleClass="login-button" prefWidth="250" defaultButton="true" />
+
+                                <!-- Additional Actions -->
+                                <HBox spacing="15" alignment="CENTER">
+                                    <children>
+                                        <Button onAction="#clearFields" text="Clear" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 8 16; -fx-border-radius: 5; -fx-background-radius: 5;" />
+                                    </children>
+                                </HBox>
+                            </children>
+                        </VBox>
+
+                        <!-- Footer Info -->
+                        <VBox spacing="5" alignment="CENTER">
+                            <children>
+                                <Separator prefWidth="200" style="-fx-background-color: #bdc3c7;" />
+                                <Label text="🔐 Secure • Private • Confidential" style="-fx-font-size: 12px; -fx-text-fill: #27ae60; -fx-font-weight: bold;" />
+                                <Label text="For support, contact: +40 XXX XXX XXX" style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d;" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+            </children>
         </VBox>
-    </children>
+    </center>
 
-</AnchorPane>
+    <!-- Footer -->
+    <bottom>
+        <HBox alignment="CENTER" spacing="10" style="-fx-background-color: rgba(52, 73, 94, 0.8); -fx-padding: 15;">
+            <children>
+                <Label text="© 2025 Hospital Management System" style="-fx-text-fill: white; -fx-font-size: 12px;" />
+                <Label text="•" style="-fx-text-fill: #bdc3c7;" />
+                <Label text="Powered by JavaFX" style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;" />
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

@@ -1,16 +1,152 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.controller.UserController"
-      alignment="CENTER" spacing="15" styleClass="user-pane" padding="20">
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.UserController">
+    <top>
+        <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: #2c3e50; -fx-padding: 20;">
+            <children>
+                <Label text="Patient Portal" textFill="WHITE">
+                    <font>
+                        <Font name="System Bold" size="24.0" />
+                    </font>
+                </Label>
+                <Label fx:id="welcomeLabel" text="Welcome, Patient" textFill="#ecf0f1">
+                    <font>
+                        <Font size="16.0" />
+                    </font>
+                </Label>
+            </children>
+        </VBox>
+    </top>
+    <center>
+        <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: #ecf0f1;">
+            <content>
+                <VBox alignment="TOP_CENTER" spacing="20.0" style="-fx-background-color: #ecf0f1;">
+                    <children>
+                        <VBox alignment="CENTER" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);" maxWidth="600.0">
+                            <children>
+                                <Label text="Personal Information" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                <Separator />
 
-    <Label fx:id="nameLabel" text="Name:"/>
-    <Label fx:id="cnpLabel" text="CNP:"/>
-    <Label fx:id="phoneLabel" text="Phone:"/>
-    <Label fx:id="emailLabel" text="Email:"/>
-    <ImageView fx:id="xrayImage" fitHeight="200" fitWidth="300"/>
-</VBox>
+                                <GridPane hgap="15.0" vgap="15.0" alignment="CENTER">
+                                    <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="120.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
+                                    </columnConstraints>
+                                    <children>
+                                        <Label text="First Name:" style="-fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                                        <Label fx:id="nameLabel" text="N/A" style="-fx-text-fill: #2c3e50;" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+
+                                        <Label text="Last Name:" style="-fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                                        <Label fx:id="surnameLabel" text="N/A" style="-fx-text-fill: #2c3e50;" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+                                        <Label text="CNP:" style="-fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                                        <Label fx:id="cnpLabel" text="N/A" style="-fx-text-fill: #2c3e50;" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                                        <Label text="Phone:" style="-fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+                                        <Label fx:id="phoneLabel" text="N/A" style="-fx-text-fill: #2c3e50;" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+
+                                        <Label text="Email:" style="-fx-font-weight: bold;" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                                        <Label fx:id="emailLabel" text="N/A" style="-fx-text-fill: #2c3e50;" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                                    </padding>
+                                </GridPane>
+
+                                <HBox alignment="CENTER" spacing="10.0">
+                                    <children>
+                                        <Label text="📋 For any changes to your information, please contact the reception desk." style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;" />
+                                    </children>
+                                </HBox>
+
+                                <Label fx:id="statusLabel" style="-fx-font-size: 14px;" text="Information loaded successfully" textFill="#27ae60" />
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+
+                        <VBox alignment="CENTER" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);" maxWidth="600.0">
+                            <children>
+                                <Label text="X-Ray Images" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                <Separator />
+
+                                <VBox alignment="CENTER" spacing="10.0">
+                                    <children>
+                                        <ImageView fx:id="xrayImage" fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
+                                            <image>
+<!--                                                <Image url="@../images/no-xray.png" />-->
+                                            </image>
+                                        </ImageView>
+                                        <Label fx:id="xrayLabel" text="No X-ray image available" style="-fx-font-style: italic; -fx-text-fill: #7f8c8d;" />
+                                        <Label text="🔍 Click on the image to view full size" style="-fx-font-size: 12px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;" />
+                                    </children>
+                                </VBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+
+                        <VBox alignment="CENTER" spacing="15.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);" maxWidth="600.0">
+                            <children>
+                                <Label text="Important Information" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                <Separator />
+
+                                <VBox spacing="10.0">
+                                    <children>
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Label text="📞" style="-fx-font-size: 16px;" />
+                                                <Label text="For appointments or questions, call: +40 XXX XXX XXX" style="-fx-text-fill: #34495e;" />
+                                            </children>
+                                        </HBox>
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Label text="🏥" style="-fx-font-size: 16px;" />
+                                                <Label text="Visit us at: Hospital Address, City" style="-fx-text-fill: #34495e;" />
+                                            </children>
+                                        </HBox>
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Label text="⏰" style="-fx-font-size: 16px;" />
+                                                <Label text="Office Hours: Monday - Friday, 8:00 AM - 6:00 PM" style="-fx-text-fill: #34495e;" />
+                                            </children>
+                                        </HBox>
+                                        <HBox spacing="10.0">
+                                            <children>
+                                                <Label text="✉️" style="-fx-font-size: 16px;" />
+                                                <Label text="Email: info@hospital.com" style="-fx-text-fill: #34495e;" />
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
+                    </padding>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+    <bottom>
+        <HBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #34495e; -fx-padding: 15;">
+            <children>
+                <Label text="Logged in as patient" style="-fx-text-fill: #ecf0f1; -fx-font-style: italic;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button onAction="#handleLogout" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15;" text="Logout" />
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>

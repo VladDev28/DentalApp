@@ -47,7 +47,21 @@ public class LoginController {
                 if (result.verified) {
                     errorLabel.setText("");
 
-                    SceneManager.switchScene(event, "/fxml/admin.fxml", "Hospital Management - Admin Dashboard");
+                    if ("admin".equalsIgnoreCase(role)) {
+                        SceneManager.switchScene(event, "/fxml/admin.fxml", "Hospital Management - Admin Dashboard");
+                    } else if ("user".equalsIgnoreCase(role)) {
+                        FXMLLoader loader = SceneManager.switchScene(event, "/fxml/user.fxml", "Hospital Management - Patient Portal");
+
+                        UserController userController = loader.getController();
+
+                        Patient patient = PatientDAO.findByCnp(username);
+                        if (patient != null) {
+                            userController.setPatient(patient);
+                        }
+
+                    } else {
+                        errorLabel.setText("Unknown user role. Please contact administration.");
+                    }
 
                 } else {
                     errorLabel.setText("Invalid credentials.");
@@ -56,18 +70,10 @@ public class LoginController {
                 errorLabel.setText("Invalid credentials.");
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            errorLabel.setText("Database error. Please try again later.");
+            e.printStackTrace();
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @FXML
-    private void handleRegister(ActionEvent event) {
-        try {
-            SceneManager.switchScene(event, "/fxml/login.fxml", "Dentist Office");
-        } catch (Exception e) {
-            errorLabel.setText("Error loading registration page.");
+            errorLabel.setText("Error loading interface. Please contact support.");
             e.printStackTrace();
         }
     }

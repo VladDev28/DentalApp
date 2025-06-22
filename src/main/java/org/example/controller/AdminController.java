@@ -1,14 +1,17 @@
 package org.example.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import org.example.dao.PatientDAO;
+import org.example.dao.UserDAO;
 import javafx.collections.FXCollections;
 import org.example.model.Patient;
+import org.example.model.User;
 import org.example.manager.SceneManager;
 import org.example.manager.Scripts;
 
@@ -27,9 +30,10 @@ public class AdminController implements Initializable {
     @FXML private Button viewButton, editButton, deleteButton, uploadButton;
     @FXML private Label statusLabel, patientCountLabel;
 
+    @FXML private MenuBar menuBar;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
         surnameCol.setCellValueFactory(new PropertyValueFactory<>("surname"));
         cnpCol.setCellValueFactory(new PropertyValueFactory<>("cnp"));
@@ -53,7 +57,7 @@ public class AdminController implements Initializable {
             patientsTable.setItems(FXCollections.observableArrayList(patients));
             updatePatientCount(patients.size());
             if (statusLabel != null) {
-                statusLabel.setText("Patients loaded successfully");
+                statusLabel.setText("Loaded " + patients.size() + " patients");
             }
         } catch (Exception e) {
             if (statusLabel != null) {
@@ -63,24 +67,30 @@ public class AdminController implements Initializable {
         }
     }
 
+    private void updatePatientCount(int count) {
+        if (patientCountLabel != null) {
+            patientCountLabel.setText("Total Patients: " + count);
+        }
+    }
+
     @FXML
     private void handleSearch() {
         String query = searchField.getText().trim();
         try {
-            List<Patient> filtered;
+            List<Patient> patients;
             if (query.isEmpty()) {
-                filtered = PatientDAO.getAll();
+                patients = PatientDAO.getAll();
                 if (statusLabel != null) {
                     statusLabel.setText("Showing all patients");
                 }
             } else {
-                filtered = PatientDAO.searchByNameOrPhone(query);
+                patients = PatientDAO.searchByNameOrPhone(query);
                 if (statusLabel != null) {
-                    statusLabel.setText("Search completed - " + filtered.size() + " results");
+                    statusLabel.setText("Found " + patients.size() + " patients matching: " + query);
                 }
             }
-            patientsTable.setItems(FXCollections.observableArrayList(filtered));
-            updatePatientCount(filtered.size());
+            patientsTable.setItems(FXCollections.observableArrayList(patients));
+            updatePatientCount(patients.size());
         } catch (Exception e) {
             if (statusLabel != null) {
                 statusLabel.setText("Search error: " + e.getMessage());
@@ -93,6 +103,9 @@ public class AdminController implements Initializable {
     private void refreshTable() {
         searchField.clear();
         loadAllPatients();
+        if (statusLabel != null) {
+            statusLabel.setText("Patient list refreshed");
+        }
     }
 
     @FXML
@@ -109,83 +122,106 @@ public class AdminController implements Initializable {
 
     @FXML
     private void handleEditPatient(ActionEvent event) {
-        Patient selected = patientsTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
+        Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatient == null) {
+            showErrorAlert("No Patient Selected", "Please select a patient", "Select a patient from the table first.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/add_patient.fxml"));
+            SceneManager.openNewWindow(loader.toString(), "Edit Patient - " + selectedPatient.getName() + " " + selectedPatient.getSurname());
+
+            AddPatientController controller = loader.getController();
+            if (controller != null) {
+                controller.setPatientForEditing(selectedPatient);
+            }
+
+            if (statusLabel != null) {
+                statusLabel.setText("Edit patient window opened for: " + selectedPatient.getName());
+            }
+        } catch (IOException e) {
+            showErrorAlert("Error", "Cannot open edit patient window", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleDeletePatient(ActionEvent event) {
+        Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatient == null) {
+            showErrorAlert("No Patient Selected", "Please select a patient", "Select a patient from the table first.");
+            return;
+        }
+
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirm Deletion");
+        confirmAlert.setHeaderText("Delete Patient");
+        confirmAlert.setContentText("Are you sure you want to delete patient: " +
+                selectedPatient.getName() + " " + selectedPatient.getSurname() + "?\n\n" +
+                "This action cannot be undone!");
+
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                // Open edit patient dialog/scene
-                SceneManager.openNewWindow("/fxml/edit_patient.fxml", "Edit Patient");
+                boolean success = PatientDAO.deletePatient(selectedPatient.getId());
+                if (success) {
+                    loadAllPatients(); // Refresh the table
+                    if (statusLabel != null) {
+                        statusLabel.setText("Patient deleted successfully");
+                    }
+                    showInfoAlert("Success", "Patient deleted successfully.");
+                } else {
+                    if (statusLabel != null) {
+                        statusLabel.setText("Failed to delete patient");
+                    }
+                    showErrorAlert("Delete Failed", "Failed to delete patient", "Please try again.");
+                }
+            } catch (Exception e) {
                 if (statusLabel != null) {
-                    statusLabel.setText("Edit patient window opened");
+                    statusLabel.setText("Error deleting patient: " + e.getMessage());
                 }
-            } catch (IOException e) {
-                showErrorAlert("Error", "Cannot open edit patient window", e.getMessage());
+                showErrorAlert("Delete Error", "An error occurred", "Error: " + e.getMessage());
             }
         }
     }
 
     @FXML
-    private void handleDeletePatient() {
-        Patient selected = patientsTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmAlert.setTitle("Confirm Delete");
-            confirmAlert.setHeaderText("Delete Patient");
-            confirmAlert.setContentText("Are you sure you want to delete patient: " +
-                    selected.getName() + " " + selected.getSurname() + "?");
-
-            Optional<ButtonType> result = confirmAlert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                try {
-                    boolean success = PatientDAO.deletePatient(selected.getId());
-                    if (success) {
-                        if (statusLabel != null) {
-                            statusLabel.setText("Patient deleted successfully");
-                        }
-                        refreshTable();
-                    } else {
-                        if (statusLabel != null) {
-                            statusLabel.setText("Failed to delete patient");
-                        }
-                    }
-                } catch (Exception e) {
-                    showErrorAlert("Delete Error", "Failed to delete patient", e.getMessage());
-                }
-            }
+    private void handleUploadXray(ActionEvent event) {
+        Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatient == null) {
+            showErrorAlert("No Patient Selected", "Please select a patient", "Select a patient from the table first.");
+            return;
         }
-    }
 
-    @FXML
-    private void handleUploadXray() {
-        Patient selected = patientsTable.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Select X-Ray Image");
-            fileChooser.getExtensionFilters().addAll(
-                    new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
-            );
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select X-Ray Image");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
+        );
 
-            File selectedFile = fileChooser.showOpenDialog(patientsTable.getScene().getWindow());
-            if (selectedFile != null) {
-                try {
-                    byte[] imageData = Files.readAllBytes(selectedFile.toPath());
-                    boolean success = PatientDAO.updatePatientXray(selected.getId(), imageData);
+        File selectedFile = fileChooser.showOpenDialog(uploadButton.getScene().getWindow());
+        if (selectedFile != null) {
+            try {
+                byte[] imageData = Files.readAllBytes(selectedFile.toPath());
+                selectedPatient.setXray(imageData);
 
-                    if (success) {
-                        if (statusLabel != null) {
-                            statusLabel.setText("X-Ray uploaded successfully");
-                        }
-                        showInfoAlert("Success", "X-Ray uploaded successfully for " +
-                                selected.getName() + " " + selected.getSurname());
-                    } else {
-                        if (statusLabel != null) {
-                            statusLabel.setText("Failed to upload X-Ray");
-                        }
+                boolean success = PatientDAO.updatePatient(selectedPatient);
+                if (success) {
+                    if (statusLabel != null) {
+                        statusLabel.setText("X-Ray uploaded successfully for " + selectedPatient.getName());
                     }
-                } catch (IOException e) {
-                    showErrorAlert("Upload Error", "Failed to read image file", e.getMessage());
-                } catch (Exception e) {
-                    showErrorAlert("Database Error", "Failed to save X-Ray", e.getMessage());
+                    showInfoAlert("Success", "X-Ray image uploaded successfully.");
+                } else {
+                    if (statusLabel != null) {
+                        statusLabel.setText("Failed to upload X-Ray");
+                    }
+                    showErrorAlert("Upload Failed", "Failed to upload X-Ray", "Please try again.");
                 }
+            } catch (Exception e) {
+                if (statusLabel != null) {
+                    statusLabel.setText("Error uploading X-Ray: " + e.getMessage());
+                }
+                showErrorAlert("Upload Error", "An error occurred", "Error: " + e.getMessage());
             }
         }
     }
@@ -207,9 +243,70 @@ public class AdminController implements Initializable {
         }
     }
 
-    private void updatePatientCount(int count) {
-        if (patientCountLabel != null) {
-            patientCountLabel.setText("Total Patients: " + count);
+
+    @FXML
+    private void handleCreateUserForSelectedPatient(ActionEvent event) {
+        Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatient == null) {
+            showErrorAlert("No Patient Selected", "Please select a patient", "Select a patient from the table first.");
+            return;
+        }
+
+        // Check if user already exists
+        if (UserDAO.userExists(selectedPatient.getCnp())) {
+            showInfoAlert("User Already Exists",
+                    "A user account already exists for " + selectedPatient.getName() + " " + selectedPatient.getSurname() +
+                            " (CNP: " + selectedPatient.getCnp() + ")");
+            return;
+        }
+
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Create User Account");
+        confirmAlert.setHeaderText("Create User Account for Patient");
+        confirmAlert.setContentText("Create user account for: " +
+                selectedPatient.getName() + " " + selectedPatient.getSurname() + "?\n\n" +
+                "Username will be: " + selectedPatient.getCnp());
+
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            createQuickUserAccount(selectedPatient);
+        }
+    }
+
+    private void createQuickUserAccount(Patient patient) {
+        try {
+            // Generate a random password
+            String generatedPassword = UserDAO.generateRandomPassword(8);
+
+            User newUser = new User();
+            newUser.setUsername(patient.getCnp());
+            newUser.setPassword(generatedPassword);
+            newUser.setRole("user");
+
+            boolean success = UserDAO.createUser(newUser);
+
+            if (success) {
+                Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
+                infoAlert.setTitle("User Account Created");
+                infoAlert.setHeaderText("Account Successfully Created");
+                infoAlert.setContentText(
+                        "User account created for: " + patient.getName() + " " + patient.getSurname() + "\n\n" +
+                                "Username: " + newUser.getUsername() + "\n" +
+                                "Password: " + generatedPassword + "\n" +
+                                "Role: " + newUser.getRole() + "\n\n" +
+                                "Please provide these credentials to the patient."
+                );
+                infoAlert.showAndWait();
+
+                if (statusLabel != null) {
+                    statusLabel.setText("User account created for " + patient.getName() + " " + patient.getSurname());
+                }
+            } else {
+                showErrorAlert("Creation Failed", "Failed to create user account", "Please try again or use the detailed create user form.");
+            }
+
+        } catch (Exception e) {
+            showErrorAlert("Error", "Error creating user account", "Error: " + e.getMessage());
         }
     }
 
@@ -228,5 +325,4 @@ public class AdminController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
-
 }

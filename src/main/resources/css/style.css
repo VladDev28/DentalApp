@@ -1,45 +1,210 @@
+
 .root {
     -fx-background-image: url("1678785522.png");
     -fx-background-size: cover;
     -fx-background-repeat: no-repeat;
 }
 
-
-.login-pane {
-    -fx-background-color: linear-gradient(to bottom, #e0f7fa, #80deea);
-}
-
-.login-box {
-    -fx-padding: 20;
-    -fx-background-color: white;
-    -fx-border-radius: 10;
-    -fx-background-radius: 10;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0.1, 0, 2);
-}
-
-.title {
-    -fx-font-size: 20px;
+.button {
+    -fx-padding: 8 16;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
     -fx-font-weight: bold;
-    -fx-text-fill: #00796b;
 }
 
-.input-field {
-    -fx-pref-width: 250;
-    -fx-padding: 8 12;
-    -fx-background-radius: 5;
-    -fx-border-color: #b2dfdb;
+.button:hover {
+    -fx-opacity: 0.8;
+}
+
+.button:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.button-primary {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.button-primary:hover {
+    -fx-background-color: #2980b9;
+}
+
+
+.button-success {
+    -fx-background-color: #27ae60;
+    -fx-text-fill: white;
+}
+
+.button-success:hover {
+    -fx-background-color: #229954;
+}
+
+.button-danger {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+}
+
+.button-danger:hover {
+    -fx-background-color: #c0392b;
+}
+
+.button-warning {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: white;
+}
+
+.button-warning:hover {
+    -fx-background-color: #e67e22;
+}
+
+.text-field {
+    -fx-padding: 8;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-border-color: #bdc3c7;
     -fx-border-width: 1;
-    -fx-border-radius: 5;
 }
 
-.login-button {
-    -fx-background-color: #00796b;
+.text-field:focused {
+    -fx-border-color: #3498db;
+    -fx-border-width: 2;
+}
+
+.text-field:disabled {
+    -fx-background-color: #ecf0f1;
+    -fx-text-fill: #7f8c8d;
+}
+
+.label {
+    -fx-text-fill: #2c3e50;
+}
+
+.label-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.label-subtitle {
+    -fx-font-size: 16px;
+    -fx-text-fill: #34495e;
+}
+
+.status-success {
+    -fx-text-fill: #27ae60;
+}
+
+.status-error {
+    -fx-text-fill: #e74c3c;
+}
+
+.status-warning {
+    -fx-text-fill: #f39c12;
+}
+
+.status-info {
+    -fx-text-fill: #3498db;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-padding: 20;
+}
+
+.header {
+    -fx-background-color: #2c3e50;
+    -fx-padding: 20;
+}
+
+.header .label {
+    -fx-text-fill: white;
+}
+
+.footer {
+    -fx-background-color: #34495e;
+    -fx-padding: 15;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-width: 1;
+    -fx-border-radius: 4;
+}
+
+.table-view .column-header {
+    -fx-background-color: #ecf0f1;
+    -fx-border-color: #bdc3c7;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #ecf0f1;
+}
+
+.separator {
+    -fx-background-color: #bdc3c7;
+}
+
+.alert .header-panel {
+    -fx-background-color: #2c3e50;
+}
+
+.alert .header-panel .label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-padding: 8 20;
-    -fx-background-radius: 5;
 }
 
-.login-button:hover {
-    -fx-background-color: #004d40;
+.login-container {
+    -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
+}
+
+.login-form {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 20, 0, 0, 5);
+    -fx-padding: 30;
+}
+
+.image-view {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);
+}
+
+.image-view:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 8, 0, 0, 3);
+    -fx-opacity: 0.9;
+}
+
+.patient-info-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 5;
+}
+
+.patient-info-value {
+    -fx-font-size: 14px;
+    -fx-text-fill: #34495e;
+    -fx-font-weight: normal;
+    -fx-padding: 5;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane .content {
+    -fx-background-color: transparent;
 }

@@ -3,8 +3,11 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.example.dao.PatientDAO;
+import org.example.dao.UserDAO;
 import org.example.model.Patient;
+import org.example.model.User;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import org.example.manager.Scripts;
 
@@ -15,18 +18,34 @@ public class AddPatientController {
     private Label statusLabel;
     @FXML
     private Button saveButton;
+    @FXML
+    private CheckBox createUserAccountCheckbox;
 
     public void initialize(URL location, ResourceBundle resources) {
         setupValidation();
+
+        // Add the checkbox for user account creation if it doesn't exist
+        if (createUserAccountCheckbox != null) {
+            createUserAccountCheckbox.setSelected(false);
+            createUserAccountCheckbox.setText("Create user login account for this patient");
+        }
+
+        // Initial button state
+        updateButtonSaveState();
     }
 
     public void setupValidation() {
+        // Add text property listeners for real-time validation
         nameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
         surnameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
         cnpField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
         phoneField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
         emailField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
+    }
 
+    // Method called from FXML when user types in any field
+    @FXML
+    public void onFieldChanged() {
         updateButtonSaveState();
     }
 
@@ -82,7 +101,16 @@ public class AddPatientController {
             boolean success = PatientDAO.addPatient(patient);
 
             if (success) {
-                showSuccessAlert("Patient Added", "Patient has been successfully added to the database.");
+                String successMessage = "Patient has been successfully added to the database.";
+                String userAccountInfo = "";
+
+                // Check if user account should be created
+                if (createUserAccountCheckbox != null && createUserAccountCheckbox.isSelected()) {
+                    String userAccountResult = createUserAccountForPatient(patient);
+                    userAccountInfo = "\n\n" + userAccountResult;
+                }
+
+                showSuccessAlert("Patient Added", successMessage + userAccountInfo);
                 clearAllFields();
                 script.runBatchFile("C:\\postgres_archive\\script.bat");
             } else {
@@ -92,6 +120,38 @@ public class AddPatientController {
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private String createUserAccountForPatient(Patient patient) {
+        try {
+            // Check if user already exists
+            if (UserDAO.userExists(patient.getCnp())) {
+                return "⚠️ User account already exists for this patient.";
+            }
+
+            // Generate password
+            String generatedPassword = UserDAO.generateRandomPassword(8);
+
+            // Create user account
+            User newUser = new User();
+            newUser.setUsername(patient.getCnp());
+            newUser.setPassword(generatedPassword);
+            newUser.setRole("user");
+
+            boolean userSuccess = UserDAO.createUser(newUser);
+
+            if (userSuccess) {
+                return "✅ User account created!\n" +
+                        "Username: " + patient.getCnp() + "\n" +
+                        "Password: " + generatedPassword + "\n" +
+                        "Please provide these credentials to the patient.";
+            } else {
+                return "❌ Failed to create user account. You can create it manually later.";
+            }
+
+        } catch (Exception e) {
+            return "❌ Error creating user account: " + e.getMessage();
         }
     }
 
@@ -106,6 +166,11 @@ public class AddPatientController {
             phoneField.setText(patient.getPhone());
             emailField.setText(patient.getEmail());
             updateButtonSaveState();
+
+            // Hide user creation checkbox when editing
+            if (createUserAccountCheckbox != null) {
+                createUserAccountCheckbox.setVisible(false);
+            }
         }
     }
 
@@ -151,25 +216,44 @@ public class AddPatientController {
         cnpField.clear();
         phoneField.clear();
         emailField.clear();
+
+        // Reset checkbox
+        if (createUserAccountCheckbox != null) {
+            createUserAccountCheckbox.setSelected(false);
+            createUserAccountCheckbox.setVisible(true);
+        }
+
         updateButtonSaveState();
     }
 
     public void updateButtonSaveState() {
-        boolean allFieldsFilled = !nameField.getText().trim().isEmpty() &&
-                !surnameField.getText().trim().isEmpty() &&
-                !cnpField.getText().trim().isEmpty() &&
-                !phoneField.getText().trim().isEmpty() &&
-                !emailField.getText().trim().isEmpty();
+        // Check if all required fields are filled
+        boolean allFieldsFilled =
+                nameField.getText() != null && !nameField.getText().trim().isEmpty() &&
+                        surnameField.getText() != null && !surnameField.getText().trim().isEmpty() &&
+                        cnpField.getText() != null && !cnpField.getText().trim().isEmpty() &&
+                        phoneField.getText() != null && !phoneField.getText().trim().isEmpty() &&
+                        emailField.getText() != null && !emailField.getText().trim().isEmpty();
 
-        saveButton.setDisable(!allFieldsFilled);
-
-        if (allFieldsFilled) {
-            statusLabel.setText("Ready to save patient");
-            statusLabel.setStyle("-fx-text-fill: #27ae60;");
-        } else {
-            statusLabel.setText("Fill in all required fields");
-            statusLabel.setStyle("-fx-text-fill: #666666;");
+        // Enable/disable the save button
+        if (saveButton != null) {
+            saveButton.setDisable(!allFieldsFilled);
         }
+
+        // Update status label with helpful message
+        if (statusLabel != null) {
+            if (allFieldsFilled) {
+                statusLabel.setText("✅ Ready to save patient");
+                statusLabel.setStyle("-fx-text-fill: #27ae60; -fx-font-weight: bold;");
+            } else {
+                statusLabel.setText("📝 Fill in all required fields");
+                statusLabel.setStyle("-fx-text-fill: #f39c12; -fx-font-weight: normal;");
+            }
+        }
+
+        // Debug info (remove this in production)
+        System.out.println("Button state updated - All fields filled: " + allFieldsFilled);
+        System.out.println("Save button disabled: " + (saveButton != null ? saveButton.isDisabled() : "saveButton is null"));
     }
 
     private void showSuccessAlert(String title, String message) {
