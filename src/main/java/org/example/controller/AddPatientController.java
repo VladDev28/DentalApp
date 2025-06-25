@@ -125,61 +125,6 @@ public class AddPatientController {
         }
     }
 
-    private int currentPatientId;
-
-    public void setPatientForEditing(Patient patient) {
-        if (patient != null) {
-            currentPatientId = patient.getId();
-            nameField.setText(patient.getName());
-            surnameField.setText(patient.getSurname());
-            cnpField.setText(patient.getCnp());
-            phoneField.setText(patient.getPhone());
-            emailField.setText(patient.getEmail());
-            updateButtonSaveState();
-
-            if (createUserAccountCheckbox != null) {
-                createUserAccountCheckbox.setVisible(false);
-            }
-        }
-    }
-
-    @FXML
-    public void handleEditPatient() {
-        if (!validateInserts()) {
-            return;
-        }
-        try {
-            if (currentPatientId == 0) {
-                showErrorAlert("Edit Error", "No patient selected", "Please select a patient to edit.");
-                return;
-            }
-
-            Patient patient = new Patient();
-            patient.setId(currentPatientId);
-            patient.setName(nameField.getText().trim());
-            patient.setSurname(surnameField.getText().trim());
-            patient.setCnp(cnpField.getText().trim());
-            patient.setPhone(phoneField.getText().trim());
-            patient.setEmail(emailField.getText().trim());
-
-            boolean success = PatientDAO.updatePatient(patient);
-
-            if (success) {
-                showSuccessAlert("Patient Updated", "Patient information has been successfully updated.");
-                script.runBatchFile("C:\\postgres_archive\\script.bat");
-                clearAllFields();
-            } else {
-                statusLabel.setText("Failed to update patient");
-                statusLabel.setStyle("-fx-text-fill: #e74c3c;");
-                showErrorAlert("Update Error", "Failed to update patient", "Please try again.");
-            }
-        } catch (Exception e) {
-            statusLabel.setText("Error updating patient");
-            statusLabel.setStyle("-fx-text-fill: #e74c3c;");
-            showErrorAlert("Update Error", "An error occurred", "Error: " + e.getMessage());
-        }
-    }
-
     private void clearAllFields() {
         nameField.clear();
         surnameField.clear();

@@ -26,7 +26,6 @@ public class ManageUsersController implements Initializable {
     @FXML private Button resetPasswordButton, deleteUserButton;
     @FXML private Label statusLabel, userCountLabel;
 
-    // Inner class to represent user data in the table
     public static class UserTableRow {
         private final SimpleStringProperty username;
         private final SimpleStringProperty role;
@@ -66,7 +65,7 @@ public class ManageUsersController implements Initializable {
         usersTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             boolean hasSelection = newSelection != null;
             resetPasswordButton.setDisable(!hasSelection);
-            deleteUserButton.setDisable(!hasSelection || "admin".equals(newSelection.getRole())); // Can't delete admin users
+            deleteUserButton.setDisable(!hasSelection || "admin".equals(newSelection.getRole()));
         });
     }
 
@@ -79,8 +78,6 @@ public class ManageUsersController implements Initializable {
             for (User user : users) {
                 String patientName = "N/A";
                 String status = "Active";
-
-                // Try to find associated patient
                 if ("user".equals(user.getRole())) {
                     Patient patient = PatientDAO.findByCnp(user.getUsername());
                     if (patient != null) {

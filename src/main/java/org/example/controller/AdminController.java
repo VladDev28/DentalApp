@@ -124,8 +124,6 @@ public class AdminController implements Initializable {
         }
     }
 
-    // Updated handleEditPatient method for AdminController.java
-// Replace the existing handleEditPatient method with this one:
 
     @FXML
     private void handleEditPatient(ActionEvent event) {
