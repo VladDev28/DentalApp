@@ -81,7 +81,7 @@
                                     <children>
                                         <ImageView fx:id="xrayImage" fitHeight="300.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true">
                                             <image>
-<!--                                                <Image url="@../images/no-xray.png" />-->
+
                                             </image>
                                         </ImageView>
                                         <Label fx:id="xrayLabel" text="No X-ray image available" style="-fx-font-style: italic; -fx-text-fill: #7f8c8d;" />

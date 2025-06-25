@@ -1,6 +1,7 @@
 package org.example.dao;
 
 import org.example.database.Database;
+import org.example.manager.Scripts;
 import org.example.model.Patient;
 import java.sql.*;
 import java.util.ArrayList;
@@ -29,16 +30,13 @@ public class PatientDAO {
         return patients;
     }
 
-    /**
-     * Searches patients by name or phone number
-     * @param query The search query (can match first name, last name, or phone)
-     * @return List of matching patients
-     */
+    Scripts script = new Scripts();
+
     public static List<Patient> searchByNameOrPhone(String query) {
         List<Patient> patients = new ArrayList<>();
 
         if (query == null || query.trim().isEmpty()) {
-            return getAll(); // Return all patients if query is empty
+            return getAll();
         }
 
         String sql = "SELECT * FROM patients WHERE " +
@@ -69,12 +67,6 @@ public class PatientDAO {
         return patients;
     }
 
-    /**
-     * Creates a Patient object from a ResultSet
-     * @param rs The ResultSet containing patient data
-     * @return Patient object
-     * @throws SQLException if there's an error reading from ResultSet
-     */
     private static Patient createPatientFromResultSet(ResultSet rs) throws SQLException {
         Patient patient = new Patient();
         patient.setId(rs.getInt("id"));
@@ -83,12 +75,10 @@ public class PatientDAO {
         patient.setCnp(rs.getString("cnp"));
         patient.setPhone(rs.getString("phone"));
         patient.setEmail(rs.getString("email"));
-        // Add other fields as needed based on your Patient model
         return patient;
     }
 
     public static boolean addPatient(Patient patient) {
-        // Don't include 'id' in the INSERT statement - let PostgreSQL auto-generate it
         String sql = "INSERT INTO patients (name, surname, cnp, phone, email) VALUES (?, ?, ?, ?, ?) RETURNING id";
 
         try (Connection conn = Database.getConnection();
@@ -102,7 +92,6 @@ public class PatientDAO {
 
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    // Set the auto-generated ID back to the patient object
                     patient.setId(rs.getInt("id"));
                     return true;
                 }
@@ -132,6 +121,7 @@ public class PatientDAO {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
+
         } catch (SQLException e) {
             System.err.println("Error updating patient: " + e.getMessage());
             e.printStackTrace();
@@ -139,28 +129,6 @@ public class PatientDAO {
         }
     }
 
-    public static boolean updatePatientXray(long patientId, byte[] xrayData) {
-        String sql = "UPDATE patients SET xray = ? WHERE id = ?";
-
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            if (xrayData != null) {
-                stmt.setBytes(1, xrayData);
-            } else {
-                stmt.setNull(1, Types.BLOB);
-            }
-            stmt.setLong(2, patientId);
-
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.err.println("Error updating patient X-ray: " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
 
     public static boolean deletePatient(long patientId) {
         String sql = "DELETE FROM patients WHERE id = ?";

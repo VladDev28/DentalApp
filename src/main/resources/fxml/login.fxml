@@ -16,10 +16,8 @@
                     </children>
                 </VBox>
 
-                <!-- Login Form -->
                 <VBox alignment="CENTER" spacing="25" styleClass="login-form" maxWidth="400" minWidth="350">
                     <children>
-                        <!-- Form Header -->
                         <VBox alignment="CENTER" spacing="10">
                             <children>
                                 <Label text="Welcome Back" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
@@ -28,10 +26,8 @@
                             </children>
                         </VBox>
 
-                        <!-- Input Fields -->
                         <VBox spacing="20" alignment="CENTER">
                             <children>
-                                <!-- Username Field -->
                                 <VBox spacing="8" alignment="CENTER_LEFT">
                                     <children>
                                         <HBox spacing="8" alignment="CENTER_LEFT">
@@ -59,15 +55,12 @@
                             </children>
                         </VBox>
 
-                        <!-- Error Label -->
                         <Label fx:id="errorLabel" style="-fx-text-fill: #e74c3c; -fx-font-weight: bold; -fx-font-size: 14px;" text="" wrapText="true" />
 
-                        <!-- Login Button -->
                         <VBox spacing="15" alignment="CENTER">
                             <children>
                                 <Button fx:id="loginButton" onAction="#handleLogin" text="🔓 Sign In" styleClass="login-button" prefWidth="250" defaultButton="true" />
 
-                                <!-- Additional Actions -->
                                 <HBox spacing="15" alignment="CENTER">
                                     <children>
                                         <Button onAction="#clearFields" text="Clear" style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 8 16; -fx-border-radius: 5; -fx-background-radius: 5;" />
@@ -76,7 +69,6 @@
                             </children>
                         </VBox>
 
-                        <!-- Footer Info -->
                         <VBox spacing="5" alignment="CENTER">
                             <children>
                                 <Separator prefWidth="200" style="-fx-background-color: #bdc3c7;" />
@@ -90,13 +82,10 @@
         </VBox>
     </center>
 
-    <!-- Footer -->
     <bottom>
         <HBox alignment="CENTER" spacing="10" style="-fx-background-color: rgba(52, 73, 94, 0.8); -fx-padding: 15;">
             <children>
                 <Label text="© 2025 Hospital Management System" style="-fx-text-fill: white; -fx-font-size: 12px;" />
-                <Label text="•" style="-fx-text-fill: #bdc3c7;" />
-                <Label text="Powered by JavaFX" style="-fx-text-fill: #bdc3c7; -fx-font-size: 12px;" />
             </children>
         </HBox>
     </bottom>

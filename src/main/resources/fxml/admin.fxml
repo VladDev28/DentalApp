@@ -1,56 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="org.example.controller.AdminController"
-            prefHeight="400.0" prefWidth="600.0">
-    <top>
-        <VBox spacing="10" style="-fx-padding: 10;">
-            <HBox spacing="10" alignment="CENTER_LEFT">
-                <TextField fx:id="searchField" promptText="Search by name or phone" prefWidth="300"/>
-                <Button text="Search" onAction="#handleSearch"/>
-                <Button text="Refresh" onAction="#refreshTable"/>
-                <Button text="Add Patient" onAction="#handleAddPatient"/>
-            </HBox>
+            prefHeight="700.0" prefWidth="1000.0" style="-fx-background-color: #ecf0f1;">
 
-            <!-- Status and Count -->
-            <HBox spacing="20" alignment="CENTER_LEFT">
-                <Label fx:id="statusLabel" text="Ready"/>
-                <Label fx:id="patientCountLabel" text="Total Patients: 0"/>
-            </HBox>
+    <top>
+        <VBox spacing="10" style="-fx-background-color: #2c3e50; -fx-padding: 12;">
+            <children>
+                <HBox alignment="CENTER">
+                    <children>
+                        <Label text="🏥 Admin Dashboard" textFill="WHITE">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 8;">
+                    <children>
+                        <TextField fx:id="searchField" promptText="Search by name or phone" prefWidth="300"
+                                   style="-fx-padding: 8; -fx-font-size: 13px; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                        <Button text="Search" onAction="#handleSearch"
+                                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                        <Button text="Refresh" onAction="#refreshTable"
+                                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                        <Button text="Add Patient" onAction="#handleAddPatient"
+                                style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Label fx:id="statusLabel" text="Ready" style="-fx-text-fill: #27ae60; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                        <Label text="|" style="-fx-text-fill: #7f8c8d;" />
+                        <Label fx:id="patientCountLabel" text="Total Patients: 0" style="-fx-text-fill: #ecf0f1; -fx-font-weight: bold; -fx-font-size: 12px;"/>
+                    </children>
+                </HBox>
+            </children>
         </VBox>
     </top>
 
     <center>
-        <TableView fx:id="patientsTable" prefHeight="400">
-            <columns>
-                <TableColumn text="First Name" fx:id="nameCol" prefWidth="120"/>
-                <TableColumn text="Last Name" fx:id="surnameCol" prefWidth="120"/>
-                <TableColumn text="CNP" fx:id="cnpCol" prefWidth="140"/>
-                <TableColumn text="Phone" fx:id="phoneCol" prefWidth="120"/>
-                <TableColumn text="Email" fx:id="emailCol" prefWidth="180"/>
-            </columns>
-        </TableView>
+        <VBox spacing="15" style="-fx-background-color: #ecf0f1; -fx-padding: 15;">
+            <children>
+                <VBox spacing="12" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 8, 0, 0, 2); -fx-padding: 15;">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <children>
+                                <Label text="👥 Patient Records" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+                                <Region HBox.hgrow="ALWAYS" />
+                                <Label text="💡 Select a patient to view available actions"
+                                       style="-fx-font-size: 11px; -fx-text-fill: #7f8c8d; -fx-font-style: italic;" />
+                            </children>
+                        </HBox>
+
+                        <Separator prefWidth="200" style="-fx-background-color: #27ae60;" />
+
+                        <TableView fx:id="patientsTable" prefHeight="400" style="-fx-background-color: white; -fx-border-color: #bdc3c7; -fx-border-width: 1; -fx-border-radius: 4;">
+                            <columns>
+                                <TableColumn text="👤 First Name" fx:id="nameCol" prefWidth="120"/>
+                                <TableColumn text="👤 Last Name" fx:id="surnameCol" prefWidth="120"/>
+                                <TableColumn text="🆔 CNP" fx:id="cnpCol" prefWidth="140"/>
+                                <TableColumn text="📞 Phone" fx:id="phoneCol" prefWidth="120"/>
+                                <TableColumn text="📧 Email" fx:id="emailCol" prefWidth="180"/>
+                            </columns>
+                        </TableView>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
     </center>
 
     <bottom>
-        <HBox spacing="10" style="-fx-padding: 10;" alignment="CENTER_LEFT">
-            <Button fx:id="viewButton" text="View" disable="true"/>
-            <Button fx:id="editButton" text="Edit" onAction="#handleEditPatient" disable="true"/>
-            <Button fx:id="deleteButton" text="Delete" onAction="#handleDeletePatient" disable="true"/>
-            <Button fx:id="uploadButton" text="Upload X-Ray" onAction="#handleUploadXray" disable="true"/>
+        <VBox spacing="0">
+            <HBox spacing="12" style="-fx-padding: 12; -fx-background-color: #34495e;" alignment="CENTER_LEFT">
+                <children>
+                    <Button fx:id="viewButton" text="👁️ View" disable="true"
+                            style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                    <Button fx:id="editButton" text="✏️ Edit" onAction="#handleEditPatient" disable="true"
+                            style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                    <Button fx:id="deleteButton" text="🗑️ Delete" onAction="#handleDeletePatient" disable="true"
+                            style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                    <Button fx:id="uploadButton" text="📁 Upload X-Ray" onAction="#handleUploadXray" disable="true"
+                            style="-fx-background-color: #9b59b6; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
 
-            <!-- Spacer -->
-            <Region HBox.hgrow="ALWAYS"/>
+                    <Region HBox.hgrow="ALWAYS"/>
 
-            <Button text="Logout" onAction="#handleLogout"/>
-        </HBox>
+                    <Label text="Hospital Management System © 2025" style="-fx-text-fill: #bdc3c7; -fx-font-size: 11px;" />
+
+                    <Button text="🚪 Logout" onAction="#handleLogout"
+                            style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-padding: 8 12; -fx-font-weight: bold; -fx-background-radius: 4; -fx-border-radius: 4;"/>
+                </children>
+            </HBox>
+        </VBox>
     </bottom>
 </BorderPane>
-

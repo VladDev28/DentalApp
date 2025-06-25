@@ -6,9 +6,6 @@ import org.example.dao.PatientDAO;
 import org.example.dao.UserDAO;
 import org.example.model.Patient;
 import org.example.model.User;
-import java.net.URL;
-import java.util.Optional;
-import java.util.ResourceBundle;
 import org.example.manager.Scripts;
 
 public class AddPatientController {
@@ -21,26 +18,6 @@ public class AddPatientController {
     @FXML
     private CheckBox createUserAccountCheckbox;
 
-    public void initialize(URL location, ResourceBundle resources) {
-        setupValidation();
-
-        // Add the checkbox for user account creation if it doesn't exist
-        if (createUserAccountCheckbox != null) {
-            createUserAccountCheckbox.setSelected(false);
-            createUserAccountCheckbox.setText("Create user login account for this patient");
-        }
-
-        // Initial button state
-        updateButtonSaveState();
-    }
-
-    public void setupValidation() {
-        nameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
-        surnameField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
-        cnpField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
-        phoneField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
-        emailField.textProperty().addListener((obs, oldText, newText) -> updateButtonSaveState());
-    }
 
     @FXML
     public void onFieldChanged() {
@@ -58,14 +35,14 @@ public class AddPatientController {
         String email = emailField.getText().trim();
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             showErrorAlert("Validation error","Invalid email","Email format does not match");
-            emailField.requestFocus(); // Fixed: was cnpField
+            emailField.requestFocus();
             return false;
         }
 
         String phone = phoneField.getText().trim();
         if (!phone.matches("^(\\+4|004)?0?(7\\d{8})$")) {
             showErrorAlert("Validation error","Invalid Phone number","Enter a correct phone number");
-            phoneField.requestFocus(); // Fixed: was cnpField
+            phoneField.requestFocus();
             return false;
         }
         return true;
@@ -101,16 +78,14 @@ public class AddPatientController {
             if (success) {
                 String successMessage = "Patient has been successfully added to the database.";
                 String userAccountInfo = "";
+                script.runBatchFile("C:\\postgres_archive\\script.bat");
 
-                // Check if user account should be created
                 if (createUserAccountCheckbox != null && createUserAccountCheckbox.isSelected()) {
                     String userAccountResult = createUserAccountForPatient(patient);
                     userAccountInfo = "\n\n" + userAccountResult;
                 }
-
                 showSuccessAlert("Patient Added", successMessage + userAccountInfo);
                 clearAllFields();
-                script.runBatchFile("C:\\postgres_archive\\script.bat");
             } else {
                 statusLabel.setText("Failed to save patient");
                 statusLabel.setStyle("-fx-text-fill: #e74c3c;");
@@ -191,6 +166,7 @@ public class AddPatientController {
 
             if (success) {
                 showSuccessAlert("Patient Updated", "Patient information has been successfully updated.");
+                script.runBatchFile("C:\\postgres_archive\\script.bat");
                 clearAllFields();
             } else {
                 statusLabel.setText("Failed to update patient");

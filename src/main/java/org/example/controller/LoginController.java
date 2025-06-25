@@ -33,7 +33,7 @@ public class LoginController {
             return;
         }
 
-        try (Connection conn = Database.getMasterConnection()) { // Always authenticate against master
+        try (Connection conn = Database.getMasterConnection()) {
             String sql = "SELECT password, role FROM users WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);

@@ -24,14 +24,6 @@ public class SceneManager {
         return loader;
     }
 
-    public static FXMLLoader switchScene(ActionEvent event, String fxmlPath, String title, double width, double height) throws IOException {
-        FXMLLoader loader = switchScene(event, fxmlPath, title);
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setWidth(width);
-        stage.setHeight(height);
-        stage.centerOnScreen();
-        return loader;
-    }
 
     public static FXMLLoader openNewWindow(String fxmlPath, String title) throws IOException {
         FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource(fxmlPath));

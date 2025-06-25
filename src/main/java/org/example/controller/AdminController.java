@@ -3,10 +3,12 @@ package org.example.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.event.ActionEvent;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.example.dao.PatientDAO;
 import org.example.dao.UserDAO;
 import javafx.collections.FXCollections;
@@ -50,6 +52,8 @@ public class AdminController implements Initializable {
 
         loadAllPatients();
     }
+
+    Scripts script = new Scripts();
 
     private void loadAllPatients() {
         try {
@@ -100,7 +104,7 @@ public class AdminController implements Initializable {
     }
 
     @FXML
-    private void refreshTable() {
+    void refreshTable() {
         searchField.clear();
         loadAllPatients();
         if (statusLabel != null) {
@@ -120,6 +124,9 @@ public class AdminController implements Initializable {
         }
     }
 
+    // Updated handleEditPatient method for AdminController.java
+// Replace the existing handleEditPatient method with this one:
+
     @FXML
     private void handleEditPatient(ActionEvent event) {
         Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
@@ -129,13 +136,16 @@ public class AdminController implements Initializable {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/add_patient.fxml"));
-            SceneManager.openNewWindow(loader.toString(), "Edit Patient - " + selectedPatient.getName() + " " + selectedPatient.getSurname());
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/edit_patient.fxml"));
+            Stage editStage = new Stage();
+            editStage.setTitle("Edit Patient - " + selectedPatient.getName() + " " + selectedPatient.getSurname());
+            editStage.setScene(new Scene(loader.load()));
 
-            AddPatientController controller = loader.getController();
-            if (controller != null) {
-                controller.setPatientForEditing(selectedPatient);
-            }
+            EditPatientController controller = loader.getController();
+            controller.setPatientForEditing(selectedPatient);
+            controller.setAdminController(this);
+
+            editStage.show();
 
             if (statusLabel != null) {
                 statusLabel.setText("Edit patient window opened for: " + selectedPatient.getName());
@@ -165,7 +175,7 @@ public class AdminController implements Initializable {
             try {
                 boolean success = PatientDAO.deletePatient(selectedPatient.getId());
                 if (success) {
-                    loadAllPatients(); // Refresh the table
+                    loadAllPatients();
                     if (statusLabel != null) {
                         statusLabel.setText("Patient deleted successfully");
                     }
@@ -240,73 +250,6 @@ public class AdminController implements Initializable {
             } catch (IOException e) {
                 showErrorAlert("Error", "Cannot return to login screen", e.getMessage());
             }
-        }
-    }
-
-
-    @FXML
-    private void handleCreateUserForSelectedPatient(ActionEvent event) {
-        Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
-        if (selectedPatient == null) {
-            showErrorAlert("No Patient Selected", "Please select a patient", "Select a patient from the table first.");
-            return;
-        }
-
-        // Check if user already exists
-        if (UserDAO.userExists(selectedPatient.getCnp())) {
-            showInfoAlert("User Already Exists",
-                    "A user account already exists for " + selectedPatient.getName() + " " + selectedPatient.getSurname() +
-                            " (CNP: " + selectedPatient.getCnp() + ")");
-            return;
-        }
-
-        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmAlert.setTitle("Create User Account");
-        confirmAlert.setHeaderText("Create User Account for Patient");
-        confirmAlert.setContentText("Create user account for: " +
-                selectedPatient.getName() + " " + selectedPatient.getSurname() + "?\n\n" +
-                "Username will be: " + selectedPatient.getCnp());
-
-        Optional<ButtonType> result = confirmAlert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            createQuickUserAccount(selectedPatient);
-        }
-    }
-
-    private void createQuickUserAccount(Patient patient) {
-        try {
-            // Generate a random password
-            String generatedPassword = UserDAO.generateRandomPassword(8);
-
-            User newUser = new User();
-            newUser.setUsername(patient.getCnp());
-            newUser.setPassword(generatedPassword);
-            newUser.setRole("user");
-
-            boolean success = UserDAO.createUser(newUser);
-
-            if (success) {
-                Alert infoAlert = new Alert(Alert.AlertType.INFORMATION);
-                infoAlert.setTitle("User Account Created");
-                infoAlert.setHeaderText("Account Successfully Created");
-                infoAlert.setContentText(
-                        "User account created for: " + patient.getName() + " " + patient.getSurname() + "\n\n" +
-                                "Username: " + newUser.getUsername() + "\n" +
-                                "Password: " + generatedPassword + "\n" +
-                                "Role: " + newUser.getRole() + "\n\n" +
-                                "Please provide these credentials to the patient."
-                );
-                infoAlert.showAndWait();
-
-                if (statusLabel != null) {
-                    statusLabel.setText("User account created for " + patient.getName() + " " + patient.getSurname());
-                }
-            } else {
-                showErrorAlert("Creation Failed", "Failed to create user account", "Please try again or use the detailed create user form.");
-            }
-
-        } catch (Exception e) {
-            showErrorAlert("Error", "Error creating user account", "Error: " + e.getMessage());
         }
     }
 

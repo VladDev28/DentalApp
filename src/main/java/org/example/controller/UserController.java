@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.event.ActionEvent;
 import javafx.stage.Stage;
 import org.example.dao.PatientDAO;
+import org.example.manager.Scripts;
 import org.example.model.Patient;
 import org.example.manager.SceneManager;
 
@@ -57,6 +58,9 @@ public class UserController implements Initializable {
     private void displayPatientInfo() {
         if (currentPatient == null) return;
 
+//        Scripts script = new Scripts();
+//        script.runBatchFile("C:\\postgres_archive\\script.bat");
+
         welcomeLabel.setText("Welcome, " + currentPatient.getName() + " " + currentPatient.getSurname());
 
         nameLabel.setText(currentPatient.getName() != null ? currentPatient.getName() : "N/A");
@@ -84,15 +88,6 @@ public class UserController implements Initializable {
         statusLabel.setStyle("-fx-text-fill: #e74c3c;");
     }
 
-    private void displayPatientNotFound() {
-        displayNoPatientInfo();
-        statusLabel.setText("❌ Patient information not found");
-        statusLabel.setStyle("-fx-text-fill: #e74c3c;");
-
-        showErrorAlert("Patient Not Found",
-                "Unable to load patient information",
-                "Your patient record could not be found in the system. Please contact the reception desk for assistance.");
-    }
 
     private void displayXray() {
         if (currentPatient.getXray() != null && currentPatient.getXray().length > 0) {
@@ -161,13 +156,4 @@ public class UserController implements Initializable {
         alert.showAndWait();
     }
 
-
-    public void refreshPatientData() {
-        if (currentPatient != null) {
-            Patient updatedPatient = PatientDAO.findByCnp(currentPatient.getCnp());
-            if (updatedPatient != null) {
-                setPatient(updatedPatient);
-            }
-        }
-    }
 }
