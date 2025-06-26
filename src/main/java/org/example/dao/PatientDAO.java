@@ -75,7 +75,58 @@ public class PatientDAO {
         patient.setCnp(rs.getString("cnp"));
         patient.setPhone(rs.getString("phone"));
         patient.setEmail(rs.getString("email"));
+
+        byte[] xrayData = rs.getBytes("xray");
+        if (xrayData != null) {
+            patient.setXray(xrayData);
+        }
+
         return patient;
+    }
+
+    public static Patient findByCnp(String cnp) {
+        String sql = "SELECT * FROM patients WHERE cnp = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cnp);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return createPatientFromResultSet(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error finding patient by CNP: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static boolean updatePatientXray(int patientId, byte[] xrayData) {
+        String sql = "UPDATE patients SET xray = ? WHERE id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            if (xrayData != null) {
+                stmt.setBytes(1, xrayData);
+            } else {
+                stmt.setNull(1, Types.BLOB);
+            }
+            stmt.setInt(2, patientId);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            System.err.println("Error updating patient X-ray: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static boolean addPatient(Patient patient) {
@@ -145,27 +196,5 @@ public class PatientDAO {
             e.printStackTrace();
             return false;
         }
-    }
-
-    public static Patient findByCnp(String cnp) {
-        String sql = "SELECT * FROM patients WHERE cnp = ?";
-
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, cnp);
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return createPatientFromResultSet(rs);
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error finding patient by CNP: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        return null;
     }
 }

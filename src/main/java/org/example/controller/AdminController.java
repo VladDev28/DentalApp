@@ -204,30 +204,59 @@ public class AdminController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select X-Ray Image");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
         );
 
         File selectedFile = fileChooser.showOpenDialog(uploadButton.getScene().getWindow());
         if (selectedFile != null) {
             try {
-                byte[] imageData = Files.readAllBytes(selectedFile.toPath());
-                selectedPatient.setXray(imageData);
+                long fileSize = selectedFile.length();
+                long maxSize = 10 * 1024 * 1024; // 10MB limit
 
-                boolean success = PatientDAO.updatePatient(selectedPatient);
+                if (fileSize > maxSize) {
+                    showErrorAlert("File Too Large", "X-Ray image is too large",
+                            "Please select an image smaller than 10MB. Current size: " + (fileSize / 1024 / 1024) + "MB");
+                    return;
+                }
+                byte[] imageData = Files.readAllBytes(selectedFile.toPath());
+
+                boolean success = PatientDAO.updatePatientXray(selectedPatient.getId(), imageData);
+
                 if (success) {
+
+                    selectedPatient.setXray(imageData);
+
                     if (statusLabel != null) {
-                        statusLabel.setText("X-Ray uploaded successfully for " + selectedPatient.getName());
+                        statusLabel.setText("✅ X-Ray uploaded successfully for " + selectedPatient.getName());
+                        statusLabel.setStyle("-fx-text-fill: #27ae60;");
                     }
-                    showInfoAlert("Success", "X-Ray image uploaded successfully.");
+
+                    showInfoAlert("Success",
+                            "X-Ray image uploaded successfully for patient: " +
+                                    selectedPatient.getName() + " " + selectedPatient.getSurname() + "\n\n" +
+                                    "File: " + selectedFile.getName() + "\n" +
+                                    "Size: " + String.format("%.2f MB", fileSize / 1024.0 / 1024.0));
+
+                    loadAllPatients();
+
                 } else {
                     if (statusLabel != null) {
-                        statusLabel.setText("Failed to upload X-Ray");
+                        statusLabel.setText("❌ Failed to upload X-Ray");
+                        statusLabel.setStyle("-fx-text-fill: #e74c3c;");
                     }
                     showErrorAlert("Upload Failed", "Failed to upload X-Ray", "Please try again.");
                 }
+            } catch (IOException e) {
+                if (statusLabel != null) {
+                    statusLabel.setText("❌ Error reading X-Ray file: " + e.getMessage());
+                    statusLabel.setStyle("-fx-text-fill: #e74c3c;");
+                }
+                showErrorAlert("File Error", "Cannot read the image file", "Error: " + e.getMessage());
             } catch (Exception e) {
                 if (statusLabel != null) {
-                    statusLabel.setText("Error uploading X-Ray: " + e.getMessage());
+                    statusLabel.setText("❌ Error uploading X-Ray: " + e.getMessage());
+                    statusLabel.setStyle("-fx-text-fill: #e74c3c;");
                 }
                 showErrorAlert("Upload Error", "An error occurred", "Error: " + e.getMessage());
             }
