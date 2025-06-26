@@ -40,7 +40,6 @@
                                     </children>
                                 </VBox>
 
-                                <!-- Password Field -->
                                 <VBox spacing="8" alignment="CENTER_LEFT">
                                     <children>
                                         <HBox spacing="8" alignment="CENTER_LEFT">

@@ -33,7 +33,7 @@ public class LoginController {
             return;
         }
 
-        try (Connection conn = Database.getMasterConnection()) {
+        try (Connection conn = Database.getUserReadConnection()) {
             String sql = "SELECT password, role FROM users WHERE username = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
@@ -54,7 +54,7 @@ public class LoginController {
 
                         UserController userController = loader.getController();
 
-                        Patient patient = PatientDAO.findByCnp(username);
+                        Patient patient = PatientDAO.findByCnpForUser(username);
                         if (patient != null) {
                             userController.setPatient(patient);
                         }

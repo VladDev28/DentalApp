@@ -60,9 +60,6 @@ public class UserController implements Initializable {
     private void displayPatientInfo() {
         if (currentPatient == null) return;
 
-//        Scripts script = new Scripts();
-//        script.runBatchFile("C:\\postgres_archive\\script.bat");
-
         welcomeLabel.setText("Welcome, " + currentPatient.getName() + " " + currentPatient.getSurname());
 
         nameLabel.setText(currentPatient.getName() != null ? currentPatient.getName() : "N/A");
@@ -110,8 +107,6 @@ public class UserController implements Initializable {
         }
     }
 
-// Replace the showXrayFullSize method in UserController.java with this:
-
     private void showXrayFullSize() {
         if (currentPatient == null || currentPatient.getXray() == null || currentPatient.getXray().length == 0) {
             return;
@@ -124,7 +119,7 @@ public class UserController implements Initializable {
             xrayStage.setScene(new Scene(loader.load()));
 
             XrayViewerController controller = loader.getController();
-            controller.setPatient(currentPatient, false); // false = not admin view
+            controller.setPatient(currentPatient, false);
 
             xrayStage.show();
 
@@ -133,9 +128,6 @@ public class UserController implements Initializable {
             e.printStackTrace();
         }
     }
-
-// Also add this import at the top of the file:
-// import javafx.scene.Scene;
 
     @FXML
     private void handleLogout(ActionEvent event) {

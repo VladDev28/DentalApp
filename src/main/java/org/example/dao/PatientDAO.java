@@ -13,7 +13,7 @@ public class PatientDAO {
         List<Patient> patients = new ArrayList<>();
         String sql = "SELECT * FROM patients";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getAdminConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -32,6 +32,7 @@ public class PatientDAO {
 
     Scripts script = new Scripts();
 
+
     public static List<Patient> searchByNameOrPhone(String query) {
         List<Patient> patients = new ArrayList<>();
 
@@ -44,7 +45,7 @@ public class PatientDAO {
                 "LOWER(surname) LIKE LOWER(?) OR " +
                 "phone LIKE ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getAdminConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String searchPattern = "%" + query.trim() + "%";
@@ -84,10 +85,34 @@ public class PatientDAO {
         return patient;
     }
 
+
+    public static Patient findByCnpForUser(String cnp) {
+        String sql = "SELECT * FROM patients WHERE cnp = ?";
+
+        try (Connection conn = Database.getUserReadConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, cnp);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return createPatientFromResultSet(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error finding patient by CNP (user): " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
     public static Patient findByCnp(String cnp) {
         String sql = "SELECT * FROM patients WHERE cnp = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getAdminConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, cnp);
@@ -109,7 +134,7 @@ public class PatientDAO {
     public static boolean updatePatientXray(int patientId, byte[] xrayData) {
         String sql = "UPDATE patients SET xray = ? WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getMasterConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             if (xrayData != null) {
@@ -132,7 +157,7 @@ public class PatientDAO {
     public static boolean addPatient(Patient patient) {
         String sql = "INSERT INTO patients (name, surname, cnp, phone, email) VALUES (?, ?, ?, ?, ?) RETURNING id";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getMasterConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, patient.getName());
@@ -159,7 +184,7 @@ public class PatientDAO {
     public static boolean updatePatient(Patient patient) {
         String sql = "UPDATE patients SET name = ?, surname = ?, cnp = ?, phone = ?, email = ? WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getMasterConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, patient.getName());
@@ -172,7 +197,6 @@ public class PatientDAO {
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
 
-
         } catch (SQLException e) {
             System.err.println("Error updating patient: " + e.getMessage());
             e.printStackTrace();
@@ -180,11 +204,10 @@ public class PatientDAO {
         }
     }
 
-
     public static boolean deletePatient(long patientId) {
         String sql = "DELETE FROM patients WHERE id = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getMasterConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setLong(1, patientId);

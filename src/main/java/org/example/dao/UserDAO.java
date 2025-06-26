@@ -9,11 +9,10 @@ import java.util.List;
 
 public class UserDAO {
 
-
     public static boolean createUser(User user) {
         String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
 
-        try (Connection conn = Database.getMasterConnection(); // Always use master for writes
+        try (Connection conn = Database.getMasterConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             String hashedPassword = BCrypt.withDefaults().hashToString(12, user.getPassword().toCharArray());
@@ -35,7 +34,7 @@ public class UserDAO {
     public static boolean userExists(String username) {
         String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getUserReadConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
@@ -57,7 +56,7 @@ public class UserDAO {
         List<User> users = new ArrayList<>();
         String sql = "SELECT id, username, role FROM users ORDER BY username";
 
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = Database.getAdminConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -88,5 +87,4 @@ public class UserDAO {
 
         return password.toString();
     }
-
 }

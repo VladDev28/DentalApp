@@ -175,8 +175,8 @@ public class AdminController implements Initializable {
             xrayStage.setScene(new Scene(loader.load()));
 
             XrayViewerController controller = loader.getController();
-            controller.setPatient(selectedPatient, true); // true = admin view (shows delete button)
-            controller.setAdminController(this); // Pass reference for table refresh after delete
+            controller.setPatient(selectedPatient, true);
+            controller.setAdminController(this);
 
             xrayStage.show();
 
@@ -190,7 +190,6 @@ public class AdminController implements Initializable {
         }
     }
 
-// Remove all the inline JavaFX UI code from the previous handleViewXray implementation
 
     @FXML
     private void handleDeletePatient(ActionEvent event) {
@@ -251,7 +250,7 @@ public class AdminController implements Initializable {
         if (selectedFile != null) {
             try {
                 long fileSize = selectedFile.length();
-                long maxSize = 10 * 1024 * 1024; // 10MB limit
+                long maxSize = 10 * 1024 * 1024;
 
                 if (fileSize > maxSize) {
                     showErrorAlert("File Too Large", "X-Ray image is too large",

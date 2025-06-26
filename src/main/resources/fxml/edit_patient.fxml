@@ -32,7 +32,7 @@
             <content>
                 <VBox alignment="TOP_CENTER" spacing="25.0" style="-fx-background-color: #ecf0f1;">
                     <children>
-                        <!-- Patient Information Card -->
+
                         <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);" maxWidth="550.0">
                             <children>
                                 <VBox alignment="CENTER" spacing="10.0">
@@ -74,7 +74,6 @@
                             </padding>
                         </VBox>
 
-                        <!-- Status Card -->
                         <VBox alignment="CENTER" spacing="10.0" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);" maxWidth="550.0">
                             <children>
                                 <Label fx:id="statusLabel" style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Ready to save changes" textFill="#27ae60" />
@@ -84,7 +83,6 @@
                             </padding>
                         </VBox>
 
-                        <!-- Information Note -->
                         <VBox alignment="CENTER" spacing="8.0" style="-fx-background-color: #e8f4fd; -fx-background-radius: 8; -fx-border-color: #3498db; -fx-border-width: 1; -fx-border-radius: 8;" maxWidth="550.0">
                             <children>
                                 <Label text="ℹ️ Important Notes:" style="-fx-font-weight: bold; -fx-font-size: 12px; -fx-text-fill: #2c3e50;" />

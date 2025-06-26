@@ -39,10 +39,8 @@ public class XrayViewerController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Enable panning in scroll pane
         scrollPane.setPannable(true);
 
-        // Add mouse wheel zoom support
         scrollPane.addEventFilter(ScrollEvent.SCROLL, event -> {
             if (event.isControlDown()) {
                 handleMouseWheelZoom(event);
@@ -50,7 +48,6 @@ public class XrayViewerController implements Initializable {
             }
         });
 
-        // Configure delete button visibility (hidden by default, shown for admin)
         deleteButton.setVisible(false);
         deleteButton.setManaged(false);
     }
@@ -63,7 +60,6 @@ public class XrayViewerController implements Initializable {
             loadPatientInfo();
             loadXrayImage();
 
-            // Show delete button only for admin view
             deleteButton.setVisible(isAdmin);
             deleteButton.setManaged(isAdmin);
         }
@@ -93,13 +89,11 @@ public class XrayViewerController implements Initializable {
                 xrayImageView.setPreserveRatio(true);
                 xrayImageView.setSmooth(true);
 
-                // Update image info
                 double sizeInKB = patient.getXray().length / 1024.0;
                 imageSizeLabel.setText(String.format("Size: %.1f KB", sizeInKB));
                 dimensionsLabel.setText(String.format("Dimensions: %.0f x %.0f px",
                         xrayImage.getWidth(), xrayImage.getHeight()));
 
-                // Initially fit to window
                 handleFitToWindow();
 
             } catch (Exception e) {
@@ -164,12 +158,10 @@ public class XrayViewerController implements Initializable {
                 if (success) {
                     patient.setXray(null);
 
-                    // Refresh admin table if reference exists
                     if (adminController != null) {
                         adminController.refreshTable();
                     }
 
-                    // Close the viewer
                     handleClose();
 
                     showInfo("X-ray image deleted successfully.");
@@ -201,7 +193,6 @@ public class XrayViewerController implements Initializable {
     }
 
     private void setZoom(double zoom) {
-        // Limit zoom between 10% and 500%
         zoom = Math.max(0.1, Math.min(5.0, zoom));
         currentZoom = zoom;
 
