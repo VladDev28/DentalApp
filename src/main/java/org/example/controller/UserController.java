@@ -1,7 +1,9 @@
 package org.example.controller;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -108,28 +110,32 @@ public class UserController implements Initializable {
         }
     }
 
+// Replace the showXrayFullSize method in UserController.java with this:
+
     private void showXrayFullSize() {
-        if (currentPatient == null || currentPatient.getXray() == null) return;
+        if (currentPatient == null || currentPatient.getXray() == null || currentPatient.getXray().length == 0) {
+            return;
+        }
 
         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/xray_viewer.fxml"));
             Stage xrayStage = new Stage();
-            xrayStage.setTitle("X-Ray - " + currentPatient.getName() + " " + currentPatient.getSurname());
+            xrayStage.setTitle("X-Ray Image - " + currentPatient.getName() + " " + currentPatient.getSurname());
+            xrayStage.setScene(new Scene(loader.load()));
 
-            ImageView fullSizeImageView = new ImageView();
-            Image fullSizeImage = new Image(new ByteArrayInputStream(currentPatient.getXray()));
-            fullSizeImageView.setImage(fullSizeImage);
-            fullSizeImageView.setPreserveRatio(true);
-            fullSizeImageView.setFitWidth(800);
-            fullSizeImageView.setFitHeight(600);
+            XrayViewerController controller = loader.getController();
+            controller.setPatient(currentPatient, false); // false = not admin view
 
-            javafx.scene.Scene scene = new javafx.scene.Scene(new javafx.scene.layout.StackPane(fullSizeImageView), 820, 620);
-            xrayStage.setScene(scene);
             xrayStage.show();
 
         } catch (Exception e) {
             showErrorAlert("Error", "Cannot display X-ray", "Error displaying X-ray image: " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
+// Also add this import at the top of the file:
+// import javafx.scene.Scene;
 
     @FXML
     private void handleLogout(ActionEvent event) {

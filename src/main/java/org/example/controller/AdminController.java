@@ -154,6 +154,45 @@ public class AdminController implements Initializable {
     }
 
     @FXML
+    private void handleViewXray(ActionEvent event) {
+        Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
+        if (selectedPatient == null) {
+            showErrorAlert("No Patient Selected", "Please select a patient", "Select a patient from the table first.");
+            return;
+        }
+
+        if (selectedPatient.getXray() == null || selectedPatient.getXray().length == 0) {
+            showInfoAlert("No X-Ray Available",
+                    "No X-ray image found for patient: " + selectedPatient.getName() + " " + selectedPatient.getSurname() + "\n\n" +
+                            "Use the 'Upload X-Ray' button to add an X-ray image.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/xray_viewer.fxml"));
+            Stage xrayStage = new Stage();
+            xrayStage.setTitle("X-Ray Viewer - Admin View");
+            xrayStage.setScene(new Scene(loader.load()));
+
+            XrayViewerController controller = loader.getController();
+            controller.setPatient(selectedPatient, true); // true = admin view (shows delete button)
+            controller.setAdminController(this); // Pass reference for table refresh after delete
+
+            xrayStage.show();
+
+            if (statusLabel != null) {
+                statusLabel.setText("Viewing X-ray for: " + selectedPatient.getName() + " " + selectedPatient.getSurname());
+            }
+
+        } catch (IOException e) {
+            showErrorAlert("Error", "Cannot open X-ray viewer", e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+// Remove all the inline JavaFX UI code from the previous handleViewXray implementation
+
+    @FXML
     private void handleDeletePatient(ActionEvent event) {
         Patient selectedPatient = patientsTable.getSelectionModel().getSelectedItem();
         if (selectedPatient == null) {
